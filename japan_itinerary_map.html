@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japan Trip 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--ink:#1a1a1a;--muted:#6b6b6b;--faint:#b0a99e;--paper:#f7f4ef;--card:#fff;--border:#e8e2d9;--tokyo:#c84b31;--fuji:#5a8a6e;--kyoto:#7c5cbf;--osaka:#d4821a;--transit:#4a7fb5;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+/* HERO */
+.hero{background:var(--ink);color:#f7f4ef;padding:1rem 1.5rem;flex-shrink:0;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");}
+.hero-inner{position:relative;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.hero h1{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:600;line-height:1;}
+.hero h1 span{color:var(--tokyo);}
+.hero-dates{font-size:0.7rem;color:#a09484;letter-spacing:0.07em;margin-top:0.2rem;}
+.sync-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:0.25rem;}
+.sync-btn{display:flex;align-items:center;gap:0.45rem;padding:0.4rem 0.85rem;background:transparent;border:1px solid rgba(255,255,255,0.25);border-radius:20px;color:#f7f4ef;font-family:'DM Sans',sans-serif;font-size:0.73rem;font-weight:500;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.sync-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.5);}
+.sync-btn:disabled{opacity:0.45;cursor:not-allowed;}
+.sync-btn svg{width:12px;height:12px;flex-shrink:0;}
+.sync-btn.spin svg{animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sync-st{font-size:0.63rem;color:#a09484;text-align:right;}
+.sync-st.ok{color:#7abf96;} .sync-st.err{color:#e08080;}
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);padding:0.55rem 1.1rem;border-radius:20px;font-size:0.78rem;font-weight:500;z-index:9999;transition:transform 0.3s;pointer-events:none;white-space:nowrap;background:var(--ink);color:#f7f4ef;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.ok{background:#2d7a45;} .toast.err{background:#b03030;}
+/* TABS */
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{flex:1;padding:0.65rem 0.5rem;text-align:center;font-size:0.72rem;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent;transition:color 0.2s,border-color 0.2s;user-select:none;}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink);}
+.panel{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.panel.active{display:flex;}
+/* MAP PANEL */
+.dsel-wrap{background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.dsel{display:flex;overflow-x:auto;padding:0.5rem 0.75rem;gap:0.3rem;scrollbar-width:none;}
+.dsel::-webkit-scrollbar{display:none;}
+.dbt{flex-shrink:0;padding:0.28rem 0.65rem;border-radius:20px;font-size:0.68rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--paper);color:var(--muted);transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.dbt:hover{border-color:#aaa;color:var(--ink);}
+.dbt.active{color:#fff;border-color:transparent;}
+.dinfo{padding:0.4rem 1rem;font-size:0.73rem;color:var(--muted);background:var(--paper);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;min-height:30px;}
+.dinfo-t{font-weight:500;color:var(--ink);}
+#map{flex:1;}
+/* SHEET PANEL */
+.sheet-scroll{flex:1;overflow-y:auto;padding:1.1rem;}
+.sheet-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.9rem;}
+.sheet-hdr h2{font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;}
+.sheet-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem;}
+.sheet-row{display:flex;align-items:flex-start;gap:0.7rem;padding:0.6rem 0.9rem;border-bottom:1px solid #f2ece5;}
+.sheet-row:last-child{border-bottom:none;}
+.scb{width:4px;border-radius:4px;flex-shrink:0;align-self:stretch;min-height:18px;}
+.sr-d{font-size:0.63rem;letter-spacing:0.09em;text-transform:uppercase;color:var(--faint);margin-bottom:0.08rem;}
+.sr-t{font-weight:500;font-size:0.83rem;}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--faint);}
+.empty p{font-size:0.82rem;margin-top:0.5rem;line-height:1.6;}
+.sync-hint{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;font-size:0.8rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;}
+.sync-hint strong{color:var(--ink);}
+.sync-hint code{background:#f2ece5;padding:1px 5px;border-radius:4px;font-size:0.78rem;}
+/* DAYS PANEL */
+.days-sc{flex:1;overflow-y:auto;}
+.cont{max-width:860px;margin:0 auto;padding:1rem 1.1rem;}
+.ph{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;margin:1.5rem 0 0.55rem;display:flex;align-items:center;gap:0.75rem;color:var(--faint);}
+.ph::after{content:'';flex:1;height:1px;background:var(--border);}
+.dc{background:var(--card);border:1px solid var(--border);border-radius:11px;margin-bottom:0.5rem;overflow:hidden;transition:box-shadow 0.2s;}
+.dc:hover{box-shadow:0 3px 16px rgba(0,0,0,0.06);}
+.dh{display:flex;align-items:stretch;cursor:pointer;}
+.dcb{width:5px;flex-shrink:0;}
+.dhi{display:flex;align-items:center;gap:0.9rem;padding:0.75rem 1rem;flex:1;}
+.dn{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:400;color:var(--faint);min-width:1.9rem;line-height:1;}
+.dm{flex:1;}
+.dd{font-size:0.64rem;letter-spacing:0.09em;text-transform:uppercase;color:var(--faint);margin-bottom:0.08rem;}
+.dt{font-weight:500;font-size:0.84rem;}
+.dtg{display:flex;gap:0.28rem;flex-wrap:wrap;margin-top:0.2rem;}
+.tag{font-size:0.6rem;padding:2px 6px;border-radius:20px;font-weight:400;}
+.tt{background:#fdf0ec;color:var(--tokyo);border:1px solid #f5cdc4;}
+.tf{background:#edf4f0;color:var(--fuji);border:1px solid #c4ddd2;}
+.tk{background:#f0edf8;color:var(--kyoto);border:1px solid #d5caea;}
+.to{background:#fdf3e8;color:var(--osaka);border:1px solid #f5d9aa;}
+.tr{background:#eaf1f8;color:var(--transit);border:1px solid #c4d9ec;}
+.chv{width:16px;height:16px;color:var(--faint);flex-shrink:0;transition:transform 0.2s;}
+.dc.open .chv{transform:rotate(180deg);}
+.db{display:none;border-top:1px solid var(--border);}
+.dc.open .db{display:block;}
+.sl{padding:0.6rem 1rem;}
+.sp{display:flex;gap:0.8rem;padding:0.45rem 0;border-bottom:1px solid #f2ece5;align-items:flex-start;}
+.sp:last-child{border-bottom:none;}
+.st{font-size:0.66rem;color:var(--faint);min-width:46px;padding-top:2px;flex-shrink:0;}
+.sd{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.sc{flex:1;}
+.sn{font-weight:500;font-size:0.83rem;}
+.sno{font-size:0.73rem;color:var(--muted);margin-top:0.08rem;line-height:1.45;}
+.tip{margin:0 1rem 0.75rem;background:#fdf8f3;border:1px solid #f0e6d6;border-radius:7px;padding:0.55rem 0.85rem;font-size:0.73rem;color:#8a6e4b;line-height:1.55;}
+.tip strong{color:#6b4f2c;}
+footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border-top:1px solid var(--border);}
+/* POPUP */
+.leaflet-popup-content-wrapper{border-radius:10px!important;font-family:'DM Sans',sans-serif!important;box-shadow:0 4px 20px rgba(0,0,0,0.15)!important;}
+.leaflet-popup-content{margin:10px 12px!important;font-size:13px!important;}
+.pu-d{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:#999;margin-bottom:3px;}
+.pu-n{font-weight:500;font-size:13px;color:#1a1a1a;margin-bottom:3px;}
+.pu-nt{font-size:11px;color:#666;line-height:1.45;}
+.pu-sh{font-size:11px;color:#7c5cbf;margin-top:5px;font-style:italic;line-height:1.4;border-top:1px solid #eee;padding-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>Japan <span>2026</span></h1>
+      <div class="hero-dates">7 May – 20 May &nbsp;·&nbsp; Tokyo · Fuji · Kyoto · Osaka</div>
+    </div>
+    <div class="sync-wrap">
+      <button class="sync-btn" id="sbtn" onclick="doSync()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Sync from Sheet
+      </button>
+      <div class="sync-st" id="sst">Not synced — using built-in data</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showPanel('mp',this)">Map</div>
+  <div class="tab" onclick="showPanel('sp',this)">Sheet Data</div>
+  <div class="tab" onclick="showPanel('dp',this)">Day by Day</div>
+</div>
+
+<!-- MAP -->
+<div id="mp" class="panel active">
+  <div class="dsel-wrap"><div class="dsel" id="dsel"></div></div>
+  <div class="dinfo"><span class="dinfo-t" id="dit">All days</span><span id="dic" style="font-size:0.67rem;color:var(--faint)"></span></div>
+  <div id="map"></div>
+</div>
+
+<!-- SHEET DATA -->
+<div id="sp" class="panel">
+  <div class="sheet-scroll">
+    <div class="sheet-hdr">
+      <h2>Sheet data</h2>
+      <button class="sync-btn" style="background:#1a1a1a;border-color:#1a1a1a;" onclick="doSync()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Sync now
+      </button>
+    </div>
+    <div class="sync-hint">
+      <strong>How syncing works:</strong> This page fetches the public CSV export of your Google Sheet.<br>
+      Sheet ID: <code>1SAdQC3DB7z3wvIgURLaYArF3R9BdLY7C</code><br>
+      Make sure it's shared as <strong>Anyone with the link → Viewer</strong>, then hit Sync.
+    </div>
+    <div id="sheet-content">
+      <div class="empty"><div style="font-size:2rem">📋</div><p>No data loaded yet.<br>Hit <strong>Sync from Sheet</strong> above to pull the latest from Google Sheets.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- DAY BY DAY -->
+<div id="dp" class="panel">
+<div class="days-sc"><div class="cont">
+  <div class="ph" style="color:#c84b31">Tokyo — May 7 to 11</div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#c84b31"></div><div class="dhi"><div class="dn">01</div><div class="dm"><div class="dd">Thu 7 May · Arrive</div><div class="dt">Land at Narita · Asakusa · Shinjuku</div><div class="dtg"><span class="tag tt">Tokyo</span><span class="tag tr">Arrival</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">10:10 am</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Arrive Narita Terminal 2</div><div class="sno">Immigration — allow 45–60 min. Get your Suica IC card!</div></div></div><div class="sp"><div class="st">11:30 am</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">Narita Express → Shinjuku</div><div class="sno">¥3,070/person · ~90 min · Check-in Hotel Gracery Shinjuku</div></div></div><div class="sp"><div class="st">2:00 pm</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Sensō-ji Temple, Asakusa</div><div class="sno">Kaminarimon Thunder Gate · Nakamise Shopping Street</div></div></div><div class="sp"><div class="st">6:00 pm</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Dinner — Omoide Yokocho</div><div class="sno">Memory Lane · tiny yakitori stalls · smoky · legendary!</div></div></div></div><div class="tip"><strong>Tip:</strong> Don't overplan today — jet lag from Sydney hits hard. Sensō-ji in the evening is quieter.</div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#c84b31"></div><div class="dhi"><div class="dn">02</div><div class="dm"><div class="dd">Fri 8 May</div><div class="dt">Nakano Broadway · Pokémon Centre · Akihabara</div><div class="dtg"><span class="tag tt">Tokyo</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">10:00 am</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Nakano Broadway</div><div class="sno">Anime · vintage figures · retro games · 4 floors</div></div></div><div class="sp"><div class="st">1:00 pm</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Pokémon Centre Mega Tokyo, Ikebukuro</div><div class="sno">Sunshine City B2F · biggest Pokémon Centre in Japan!</div></div></div><div class="sp"><div class="st">6:30 pm</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Akihabara evening</div><div class="sno">GIGO arcade · Gachapon Kaikan · anime shopping</div></div></div></div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#5a8a6e"></div><div class="dhi"><div class="dn">03</div><div class="dm"><div class="dd">Sat 9 May · Day Trip</div><div class="dt">Mt Fuji — Shibazakura Festival</div><div class="dtg"><span class="tag tf">Mt Fuji</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">7:30 am</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">Keio Bus → Kawaguchiko</div><div class="sno">Busta Shinjuku 4F · ~2h · ¥2,000/person</div></div></div><div class="sp"><div class="st">10:30 am</div><div class="sd" style="background:#5a8a6e"></div><div class="sc"><div class="sn">Shibazakura Festival</div><div class="sno">Pink moss phlox carpet with Mt Fuji backdrop!</div></div></div><div class="sp"><div class="st">12:30 pm</div><div class="sd" style="background:#5a8a6e"></div><div class="sc"><div class="sn">Fuji Q Highland</div><div class="sno">Takabisha · Fujiyama · Dodonpa</div></div></div></div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#c84b31"></div><div class="dhi"><div class="dn">04</div><div class="dm"><div class="dd">Sun 10 May</div><div class="dt">Toyosu Market · TeamLab Borderless · Odaiba</div><div class="dtg"><span class="tag tt">Tokyo</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">7:00 am</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Toyosu Fish Market</div><div class="sno">Fresh sushi breakfast · outer market from 7am</div></div></div><div class="sp"><div class="st">11:30 am</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">TeamLab Borderless, Azabudai Hills</div><div class="sno">Pre-book online — sells out fast!</div></div></div><div class="sp"><div class="st">4:00 pm</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Joypolis, Odaiba</div><div class="sno">Sega indoor theme park · VR rides · Rainbow Bridge views</div></div></div></div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#c84b31"></div><div class="dhi"><div class="dn">05</div><div class="dm"><div class="dd">Mon 11 May · Full Day</div><div class="dt">Tokyo Disneyland</div><div class="dtg"><span class="tag tt">Tokyo</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">8:00 am</div><div class="sd" style="background:#c84b31"></div><div class="sc"><div class="sn">Tokyo Disneyland — Full Day</div><div class="sno">Space Mountain · Haunted Mansion · Beauty &amp; the Beast · Extra guest joins today!</div></div></div></div><div class="tip"><strong>Tip:</strong> Monday = shorter queues. Book Premier Access for Beauty &amp; the Beast first.</div></div></div>
+  <div class="ph" style="color:#5a8a6e">Fuji + Travel — May 12</div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#5a8a6e"></div><div class="dhi"><div class="dn">06</div><div class="dm"><div class="dd">Tue 12 May · Travel Day</div><div class="dt">Fuji Day Trip → Shinkansen to Kyoto</div><div class="dtg"><span class="tag tf">Mt Fuji</span><span class="tag tr">→ Kyoto</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">7:30 am</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">Keio Bus → Kawaguchiko</div><div class="sno">Pack Kyoto bags tonight! Store at Shinjuku coin lockers.</div></div></div><div class="sp"><div class="st">10:30 am</div><div class="sd" style="background:#5a8a6e"></div><div class="sc"><div class="sn">Shibazakura Festival</div></div></div><div class="sp"><div class="st">12:30 pm</div><div class="sd" style="background:#5a8a6e"></div><div class="sc"><div class="sn">Fuji Q Highland</div></div></div><div class="sp"><div class="st">8:30 pm</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">Shinkansen Nozomi → Kyoto</div><div class="sno">~2h 15min · sit right side for Mt Fuji views!</div></div></div><div class="sp"><div class="st">~11 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Check-in: Cross Hotel Kyoto</div><div class="sno">Pre-arrange late check-in!</div></div></div></div></div></div>
+  <div class="ph" style="color:#7c5cbf">Kyoto — May 13 to 15</div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#7c5cbf"></div><div class="dhi"><div class="dn">07</div><div class="dm"><div class="dd">Wed 13 May · Kyoto Day 1</div><div class="dt">Higashiyama · Ninenzaka · Gion</div><div class="dtg"><span class="tag tk">Kyoto</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">11:00 am</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Ninenzaka &amp; Sannenzaka</div><div class="sno">Old stone-paved lanes · Traditional Starbucks!</div></div></div><div class="sp"><div class="st">12:30 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Nishiki Market</div><div class="sno">Kyoto's Kitchen · dango · tamagoyaki</div></div></div><div class="sp"><div class="st">4:00 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Gion — Hanamikoji Street</div><div class="sno">Geisha district · lanterns at dusk</div></div></div><div class="sp"><div class="st">6:00 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Dinner — Pontocho Alley</div><div class="sno">Riverside dining · lantern-lit lane</div></div></div></div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#7c5cbf"></div><div class="dhi"><div class="dn">08</div><div class="dm"><div class="dd">Thu 14 May · Kyoto Day 2</div><div class="dt">Kimono Rental · Fushimi Inari</div><div class="dtg"><span class="tag tk">Kyoto</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">8:30 am</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Kimono Rental — Gion</div><div class="sno">Wargo or Yumeyakata · hair set included · pre-book!</div></div></div><div class="sp"><div class="st">10:30 am</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Ninenzaka in Kimono</div><div class="sno">Most iconic Kyoto photos!</div></div></div><div class="sp"><div class="st">1:30 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Fushimi Inari Taisha</div><div class="sno">Thousands of vermillion torii gates · inner loop ~2 hours</div></div></div></div><div class="tip"><strong>Tip:</strong> Return the kimono before heading to Fushimi Inari!</div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#7c5cbf"></div><div class="dhi"><div class="dn">09</div><div class="dm"><div class="dd">Fri 15 May · Kyoto Day 3</div><div class="dt">Arashiyama · Hozu River Boat</div><div class="dtg"><span class="tag tk">Kyoto</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">8:30 am</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Arashiyama Bamboo Grove</div><div class="sno">Go early — magical and far less crowded!</div></div></div><div class="sp"><div class="st">11:00 am</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Hozu River Boat Ride</div><div class="sno">2-hour scenic gorge journey · ¥4,100/person · Book ahead!</div></div></div><div class="sp"><div class="st">1:30 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Arashiyama lunch · Tenryu-ji Temple</div><div class="sno">UNESCO garden · tofu dishes</div></div></div><div class="sp"><div class="st">4:00 pm</div><div class="sd" style="background:#7c5cbf"></div><div class="sc"><div class="sn">Otagi Nenbutsu-ji Temple</div><div class="sno">1,200 moss-covered stone statues!</div></div></div></div></div></div>
+  <div class="ph" style="color:#d4821a">Osaka — May 16 to 19</div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#d4821a"></div><div class="dhi"><div class="dn">10</div><div class="dm"><div class="dd">Sat 16 May · Arrive Osaka</div><div class="dt">Travel to Osaka · Dotonbori · Shinsaibashi</div><div class="dtg"><span class="tag to">Osaka</span><span class="tag tr">Kyoto → Osaka</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">~10 am</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">JR Special Rapid → Osaka</div><div class="sno">~30 min · Check-in Dormy Inn Namba Premium</div></div></div><div class="sp"><div class="st">2:30 pm</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Dotonbori!</div><div class="sno">Glico Running Man · takoyaki · kushikatsu!</div></div></div><div class="sp"><div class="st">4:30 pm</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Shinsaibashi · Den Den Town</div><div class="sno">600m covered arcade · anime &amp; electronics</div></div></div></div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#d4821a"></div><div class="dhi"><div class="dn">11</div><div class="dm"><div class="dd">Sun 17 May · Full Day</div><div class="dt">Universal Studios Japan</div><div class="dtg"><span class="tag to">Osaka</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">8:30 am</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Universal Studios Japan — Full Day</div><div class="sno">Harry Potter (Forbidden Journey first!) · Super Nintendo World · Jurassic Park</div></div></div></div><div class="tip"><strong>Tip:</strong> Book Express Pass for Harry Potter and Nintendo World — they sell out!</div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#d4821a"></div><div class="dhi"><div class="dn">12</div><div class="dm"><div class="dd">Mon 18 May</div><div class="dt">Osaka Castle · Solaniwa Onsen · Namba</div><div class="dtg"><span class="tag to">Osaka</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">9:00 am</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Osaka Castle</div><div class="sno">8th floor panoramic view · Nishinomaru Garden</div></div></div><div class="sp"><div class="st">12:30 pm</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Solaniwa Onsen (Osaka Bay Tower)</div><div class="sno">Hot springs · yukata rental · check tattoo policy!</div></div></div><div class="sp"><div class="st">6:00 pm</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Namba evening &amp; dinner</div><div class="sno">Dotonbori canal walk · okonomiyaki</div></div></div></div></div></div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#d4821a"></div><div class="dhi"><div class="dn">13</div><div class="dm"><div class="dd">Tue 19 May · Last Full Day</div><div class="dt">Last Day Osaka — Shopping &amp; Farewell Dinner</div><div class="dtg"><span class="tag to">Osaka</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">9:00 am</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Dotonbori morning stroll</div><div class="sno">Quieter than evenings!</div></div></div><div class="sp"><div class="st">11:00 am</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Amerika-mura &amp; Shinsaibashi</div><div class="sno">Final shopping run</div></div></div><div class="sp"><div class="st">3:00 pm</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Last Don Quijote run!</div></div></div><div class="sp"><div class="st">7:00 pm</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Farewell Dinner — Yakiniku BBQ</div><div class="sno">Splurge on wagyu — last night in Japan!</div></div></div></div></div></div>
+  <div class="ph" style="color:#4a7fb5">Departure — May 20</div>
+  <div class="dc" onclick="tog(this)"><div class="dh"><div class="dcb" style="background:#4a7fb5"></div><div class="dhi"><div class="dn">14</div><div class="dm"><div class="dd">Wed 20 May · Departure</div><div class="dt">Check-out · Kansai Airport · Sayonara Japan</div><div class="dtg"><span class="tag tr">Departure</span></div></div><svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div><div class="db"><div class="sl"><div class="sp"><div class="st">Morning</div><div class="sd" style="background:#d4821a"></div><div class="sc"><div class="sn">Check-out: Dormy Inn Namba Premium</div></div></div><div class="sp"><div class="st">~5:30 pm</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">Airport Limousine Bus → KIX</div><div class="sno">From Namba OCAT · ~45 min · ¥1,600/person</div></div></div><div class="sp"><div class="st">9:25 pm</div><div class="sd" style="background:#4a7fb5"></div><div class="sc"><div class="sn">Departure — Kansai International Airport</div><div class="sno">Sayonara Japan! Duty free before boarding.</div></div></div></div></div></div>
+</div><footer>Japan Trip 2026 &nbsp;·&nbsp; 14 days &nbsp;·&nbsp; Tokyo · Fuji · Kyoto · Osaka</footer>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SID = '1SAdQC3DB7z3wvIgURLaYArF3R9BdLY7C';
+// Try multiple URL formats — Google sometimes changes which one works
+var CSV_URLS = [
+  'https://docs.google.com/spreadsheets/d/'+SID+'/export?format=csv&gid=0',
+  'https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&sheet=2026',
+  'https://docs.google.com/spreadsheets/d/'+SID+'/pub?output=csv',
+];
+
+var COLORS = ['#c84b31','#c84b31','#5a8a6e','#c84b31','#c84b31','#5a8a6e','#7c5cbf','#7c5cbf','#7c5cbf','#d4821a','#d4821a','#d4821a','#d4821a','#4a7fb5'];
+var DATES  = ['7 May','8 May','9 May','10 May','11 May','12 May','13 May','14 May','15 May','16 May','17 May','18 May','19 May','20 May'];
+
+var LOCS = [
+  {d:1,o:1,n:'Sensō-ji Temple',la:35.7148,ln:139.7967,nt:'Kaminarimon Gate · Nakamise',c:'#c84b31'},
+  {d:1,o:2,n:'Omoide Yokocho',la:35.6927,ln:139.6996,nt:'Memory Lane · yakitori · legendary!',c:'#c84b31'},
+  {d:2,o:1,n:'Nakano Broadway',la:35.7092,ln:139.6657,nt:'Anime · vintage figures · 4 floors',c:'#c84b31'},
+  {d:2,o:2,n:'Pokémon Centre Mega Tokyo',la:35.7289,ln:139.7193,nt:'Sunshine City B2F, Ikebukuro',c:'#c84b31'},
+  {d:2,o:3,n:'Akihabara',la:35.6996,ln:139.7714,nt:'Arcades · gachapon · anime shopping',c:'#c84b31'},
+  {d:3,o:1,n:'Shibazakura Festival',la:35.4428,ln:138.6038,nt:'Pink moss phlox with Mt Fuji backdrop',c:'#5a8a6e'},
+  {d:3,o:2,n:'Fuji Q Highland',la:35.4869,ln:138.7806,nt:"World's steepest roller coaster!",c:'#5a8a6e'},
+  {d:4,o:1,n:'Toyosu Fish Market',la:35.6441,ln:139.7843,nt:'Fresh sushi breakfast',c:'#c84b31'},
+  {d:4,o:2,n:'TeamLab Borderless',la:35.6621,ln:139.7433,nt:'Azabudai Hills · pre-book online!',c:'#c84b31'},
+  {d:4,o:3,n:'Joypolis (Odaiba)',la:35.6287,ln:139.7754,nt:'Sega indoor theme park · VR rides',c:'#c84b31'},
+  {d:5,o:1,n:'Tokyo Disneyland',la:35.6329,ln:139.8804,nt:'Full day · Monday = shorter queues!',c:'#c84b31'},
+  {d:6,o:1,n:'Shibazakura Festival',la:35.4428,ln:138.6038,nt:'Morning visit before Shinkansen',c:'#5a8a6e'},
+  {d:6,o:2,n:'Fuji Q Highland',la:35.4879,ln:138.7816,nt:'Afternoon before heading to Kyoto',c:'#5a8a6e'},
+  {d:7,o:1,n:'Ninenzaka & Sannenzaka',la:34.9982,ln:135.7809,nt:'Old stone-paved lanes',c:'#7c5cbf'},
+  {d:7,o:2,n:'Nishiki Market',la:35.005,ln:135.7647,nt:"Kyoto's Kitchen · dango · tamagoyaki",c:'#7c5cbf'},
+  {d:7,o:3,n:'Gion — Hanamikoji Street',la:35.0038,ln:135.7772,nt:'Geisha district · lanterns at dusk',c:'#7c5cbf'},
+  {d:8,o:1,n:'Kimono Rental — Gion',la:35.0048,ln:135.778,nt:'Wargo or Yumeyakata · hair set included',c:'#7c5cbf'},
+  {d:8,o:2,n:'Fushimi Inari Taisha',la:34.9677,ln:135.7792,nt:'Thousands of vermillion torii gates!',c:'#7c5cbf'},
+  {d:9,o:1,n:'Arashiyama Bamboo Grove',la:35.0168,ln:135.6713,nt:'Go early — magical and less crowded',c:'#7c5cbf'},
+  {d:9,o:2,n:'Tenryu-ji Temple',la:35.0168,ln:135.6752,nt:'UNESCO garden · Togetsukyo Bridge',c:'#7c5cbf'},
+  {d:10,o:1,n:'Dotonbori',la:34.6686,ln:135.5031,nt:'Glico Man · takoyaki · kushikatsu!',c:'#d4821a'},
+  {d:10,o:2,n:'Shinsaibashi',la:34.6724,ln:135.501,nt:'600m covered arcade · Den Den Town',c:'#d4821a'},
+  {d:11,o:1,n:'Universal Studios Japan',la:34.6657,ln:135.4323,nt:'Harry Potter · Nintendo World · Jurassic Park',c:'#d4821a'},
+  {d:12,o:1,n:'Osaka Castle',la:34.6873,ln:135.5259,nt:'8th floor panoramic views',c:'#d4821a'},
+  {d:12,o:2,n:'Solaniwa Onsen',la:34.6704,ln:135.4595,nt:'Hot springs · yukata rental',c:'#d4821a'},
+  {d:13,o:1,n:'Dotonbori (morning)',la:34.6691,ln:135.5036,nt:'Quieter than evenings — great for photos',c:'#d4821a'},
+  {d:13,o:2,n:'Amerika-mura',la:34.6743,ln:135.4985,nt:"Osaka's vintage & streetwear district",c:'#d4821a'},
+  {d:14,o:1,n:'Kansai International Airport',la:34.432,ln:135.2366,nt:'Flight 9:25pm · Sayonara Japan!',c:'#4a7fb5'}
+];
+
+var sheetData = null, mapObj = null, markers = [], curDay = 'all';
+
+// ── CSV SYNC ─────────────────────────────────────────────────
+function doSync() {
+  var btn = document.getElementById('sbtn');
+  var st  = document.getElementById('sst');
+  btn.disabled = true;
+  btn.classList.add('spin');
+  st.textContent = 'Syncing…';
+  st.className = 'sync-st';
+  tryFetch(0);
+}
+
+function tryFetch(idx) {
+  if (idx >= CSV_URLS.length) {
+    onFail('Could not reach sheet after trying all methods. Is it set to public?');
+    return;
+  }
+  fetch(CSV_URLS[idx])
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(csv) {
+      processCSV(csv);
+      onSuccess();
+    })
+    .catch(function() {
+      tryFetch(idx + 1);
+    });
+}
+
+function processCSV(csv) {
+  // Parse CSV rows — handle quoted cells with commas/newlines
+  var rows = parseCSV(csv);
+  // Row 4 (index 3) = Destinations row, cols B–O = indices 1–14
+  if (rows.length < 4) throw new Error('Not enough rows in sheet');
+  var destRow = rows[3];
+  sheetData = [];
+  for (var c = 1; c <= 14; c++) {
+    var raw = destRow[c] ? destRow[c].trim() : '';
+    var title = raw.replace(/\n/g, ' · ') || DATES[c - 1];
+    if (title.length > 65) title = title.substring(0, 62) + '…';
+    sheetData.push({ day: c, title: title, color: COLORS[c - 1] });
+  }
+  rebuildDayBtns();
+  renderSheetPanel();
+  refreshPopups();
+}
+
+function parseCSV(text) {
+  var rows = [], row = [], cur = '', inQ = false;
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else cur += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(cur); cur = ''; }
+      else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+      else if (ch === '\r') {}
+      else cur += ch;
+    }
+  }
+  if (cur || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+
+function onSuccess() {
+  var btn = document.getElementById('sbtn');
+  var st  = document.getElementById('sst');
+  btn.disabled = false; btn.classList.remove('spin');
+  var t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  st.textContent = 'Last synced ' + t; st.className = 'sync-st ok';
+  showToast('Sheet synced!', 'ok');
+  try { localStorage.setItem('jt26v2', JSON.stringify({d: sheetData, t: t})); } catch(e) {}
+}
+
+function onFail(msg) {
+  var btn = document.getElementById('sbtn');
+  var st  = document.getElementById('sst');
+  btn.disabled = false; btn.classList.remove('spin');
+  st.textContent = msg || 'Sync failed'; st.className = 'sync-st err';
+  showToast('Sync failed — check the Sheet Data tab for help', 'err');
+}
+
+// ── SHEET PANEL ───────────────────────────────────────────────
+function renderSheetPanel() {
+  if (!sheetData) return;
+  var h = '<div class="sheet-card">';
+  sheetData.forEach(function(d) {
+    h += '<div class="sheet-row">'
+      + '<div class="scb" style="background:' + d.color + '"></div>'
+      + '<div><div class="sr-d">Day ' + d.day + ' · ' + DATES[d.day-1] + '</div>'
+      + '<div class="sr-t">' + escHtml(d.title) + '</div></div></div>';
+  });
+  document.getElementById('sheet-content').innerHTML = h + '</div>';
+}
+
+function refreshPopups() {
+  if (!sheetData) return;
+  markers.forEach(function(m) {
+    var sd = sheetData.find(function(x) { return x.day === m.d; });
+    if (sd) {
+      m.marker.setPopupContent(
+        '<div class="pu-d">Day ' + m.d + ' · Stop ' + m.o + '</div>'
+        + '<div class="pu-n">' + m.n + '</div>'
+        + '<div class="pu-nt">' + m.nt + '</div>'
+        + '<div class="pu-sh">📋 ' + escHtml(sd.title) + '</div>'
+      );
+    }
+  });
+}
+
+// ── MAP ───────────────────────────────────────────────────────
+function mkIcon(color, num) {
+  var s = '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="38" viewBox="0 0 30 38">'
+    + '<path d="M15 0C6.72 0 0 6.72 0 15c0 10 15 23 15 23S30 25 30 15C30 6.72 23.28 0 15 0z" fill="' + color + '"/>'
+    + '<circle cx="15" cy="15" r="9" fill="white" opacity="0.95"/>'
+    + '<text x="15" y="19" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" font-weight="600" fill="' + color + '">' + num + '</text>'
+    + '</svg>';
+  return L.divIcon({html:s, className:'', iconSize:[30,38], iconAnchor:[15,38], popupAnchor:[0,-38]});
+}
+
+function initMap() {
+  if (mapObj) return;
+  mapObj = L.map('map').setView([35.67, 139.65], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 18
+  }).addTo(mapObj);
+  LOCS.forEach(function(loc) {
+    var mk = L.marker([loc.la, loc.ln], {icon: mkIcon(loc.c, loc.o)})
+      .addTo(mapObj)
+      .bindPopup('<div class="pu-d">Day ' + loc.d + ' · Stop ' + loc.o + '</div><div class="pu-n">' + loc.n + '</div><div class="pu-nt">' + loc.nt + '</div>');
+    markers.push({marker:mk, d:loc.d, o:loc.o, n:loc.n, nt:loc.nt, la:loc.la, ln:loc.ln});
+  });
+  rebuildDayBtns();
+  // Restore cached sync
+  try {
+    var c = localStorage.getItem('jt26v2');
+    if (c) {
+      var p = JSON.parse(c);
+      sheetData = p.d;
+      document.getElementById('sst').textContent = 'Cached from ' + p.t;
+      document.getElementById('sst').className = 'sync-st ok';
+      rebuildDayBtns(); renderSheetPanel(); refreshPopups();
+    }
+  } catch(e) {}
+}
+
+function rebuildDayBtns() {
+  var sel = document.getElementById('dsel');
+  sel.innerHTML = '';
+  var ab = document.createElement('button');
+  ab.className = 'dbt active';
+  ab.textContent = 'All days';
+  ab.style.cssText = 'background:#1a1a1a;color:#fff;border-color:transparent;';
+  ab.onclick = function() { selDay('all', this); };
+  sel.appendChild(ab);
+  for (var i = 0; i < 14; i++) {
+    (function(i) {
+      var b = document.createElement('button');
+      b.className = 'dbt';
+      var lbl = sheetData ? sheetData[i].title : DATES[i];
+      if (lbl.length > 28) lbl = lbl.substring(0, 26) + '…';
+      b.innerHTML = '<strong>Day ' + (i+1) + '</strong> · ' + escHtml(lbl);
+      b.onclick = function() { selDay(i+1, this); };
+      sel.appendChild(b);
+    })(i);
+  }
+}
+
+function selDay(day, btn) {
+  curDay = day;
+  document.querySelectorAll('.dbt').forEach(function(b) {
+    b.classList.remove('active'); b.style.background=''; b.style.color=''; b.style.borderColor='';
+  });
+  btn.classList.add('active');
+  var ti = document.getElementById('dit'), co = document.getElementById('dic');
+  if (day === 'all') {
+    btn.style.cssText = 'background:#1a1a1a;color:#fff;border-color:transparent;';
+    markers.forEach(function(m) { m.marker.addTo(mapObj); });
+    mapObj.setView([35.67, 139.65], 6);
+    ti.textContent = 'All days'; co.textContent = LOCS.length + ' locations';
+  } else {
+    var cl = COLORS[day-1];
+    btn.style.cssText = 'background:' + cl + ';color:#fff;border-color:transparent;';
+    var fil = markers.filter(function(m) { return m.d === day; });
+    var oth = markers.filter(function(m) { return m.d !== day; });
+    oth.forEach(function(m) { if (mapObj.hasLayer(m.marker)) mapObj.removeLayer(m.marker); });
+    fil.forEach(function(m) { if (!mapObj.hasLayer(m.marker)) m.marker.addTo(mapObj); });
+    var lbl = sheetData ? sheetData[day-1].title : ('Day ' + day);
+    ti.textContent = 'Day ' + day + ' · ' + DATES[day-1];
+    co.textContent = fil.length + ' stop' + (fil.length !== 1 ? 's' : '');
+    if (fil.length === 1) mapObj.setView([fil[0].la, fil[0].ln], 14);
+    else if (fil.length > 1) mapObj.fitBounds(L.latLngBounds(fil.map(function(m){return[m.la,m.ln];})), {padding:[50,50]});
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + (type||''); t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+function showPanel(id, tab) {
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById(id).classList.add('active'); tab.classList.add('active');
+  if (id === 'mp') setTimeout(initMap, 50);
+}
+function tog(card) { card.classList.toggle('open'); }
+window.addEventListener('load', function() {
+  document.querySelector('.dc').classList.add('open');
+  initMap();
+});
+</script>
+</body>
+</html>
