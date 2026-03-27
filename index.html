@@ -197,7 +197,7 @@ var CSV_URLS = [
 ];
 
 var COLORS = ['#c84b31','#c84b31','#5a8a6e','#c84b31','#c84b31','#5a8a6e','#7c5cbf','#7c5cbf','#7c5cbf','#d4821a','#d4821a','#d4821a','#d4821a','#4a7fb5'];
-var DATES  = ['7 May','8 May','9 May','10 May','11 May','12 May','13 May','14 May','15 May','16 May','17 May','18 May','19 May','20 May'];
+var DATES  = ['7 May · Arrive Tokyo','8 May · Nakano · Yokohama · Akihabara','9 May · Ghibli · Kirby · Maid Café','10 May · Toyosu · Harajuku · Shibuya','11 May · Disneyland','12 May · Mt Fuji → Kyoto','13 May · Kyoto Day 1','14 May · Kyoto Day 2','15 May · Kyoto Day 3','16 May · Arrive Osaka','17 May · Universal Studios','18 May · Osaka Castle · Onsen','19 May · Last Day Osaka','20 May · Departure'];
 
 var LOCS = [
   {d:1,o:1,n:'Sensō-ji Temple',la:35.7148,ln:139.7967,nt:'Kaminarimon Gate · Nakamise Shopping Street',c:'#c84b31'},
@@ -310,7 +310,7 @@ function onSuccess() {
   var t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
   st.textContent = 'Last synced ' + t; st.className = 'sync-st ok';
   showToast('Sheet synced!', 'ok');
-  try { localStorage.setItem('jt26v2', JSON.stringify({d: sheetData, t: t})); } catch(e) {}
+  try { localStorage.setItem('jt26v3', JSON.stringify({d: sheetData, t: t})); } catch(e) {}
 }
 
 function onFail(msg) {
@@ -374,7 +374,7 @@ function initMap() {
   rebuildDayBtns();
   // Restore cached sync
   try {
-    var c = localStorage.getItem('jt26v2');
+    var c = localStorage.getItem('jt26v3');
     if (c) {
       var p = JSON.parse(c);
       sheetData = p.d;
