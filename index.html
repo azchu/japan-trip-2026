@@ -98,6 +98,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);h
 .tip{margin:0 1rem 0.75rem;background:#fdf8f3;border:1px solid #f0e6d6;border-radius:7px;padding:0.55rem 0.85rem;font-size:0.73rem;color:#8a6e4b;line-height:1.55;}
 .tip strong{color:#6b4f2c;}
 footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border-top:1px solid var(--border);}
+.sid-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem;}
+.sid-label{font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;}
+.sid-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;}
+.sid-input{flex:1;padding:0.45rem 0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.8rem;background:var(--paper);color:var(--ink);outline:none;}
+.sid-input:focus{border-color:#888;}
+.sid-btn{padding:0.45rem 0.9rem;background:var(--ink);color:#f7f4ef;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;cursor:pointer;white-space:nowrap;}
+.sid-btn:hover{opacity:0.85;}
+.sid-hint{font-size:0.72rem;color:var(--muted);line-height:1.5;}
+.sid-current{font-size:0.7rem;color:#7abf96;margin-top:0.35rem;}
 /* POPUP */
 .leaflet-popup-content-wrapper{border-radius:10px!important;font-family:'DM Sans',sans-serif!important;box-shadow:0 4px 20px rgba(0,0,0,0.15)!important;}
 .leaflet-popup-content{margin:10px 12px!important;font-size:13px!important;}
@@ -149,10 +158,14 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
         Sync now
       </button>
     </div>
-    <div class="sync-hint">
-      <strong>How syncing works:</strong> This page fetches the public CSV export of your Google Sheet.<br>
-      Sheet ID: <code>1SAdQC3DB7z3wvIgURLaYArF3R9BdLY7C</code><br>
-      Make sure it's shared as <strong>Anyone with the link → Viewer</strong>, then hit Sync.
+    <div class="sid-box">
+      <div class="sid-label">Google Sheet ID</div>
+      <div class="sid-row">
+        <input class="sid-input" id="sid-input" type="text" placeholder="Paste your Sheet ID here…" />
+        <button class="sid-btn" onclick="saveSheetId()">Save &amp; Sync</button>
+      </div>
+      <div class="sid-hint">The ID is the long string in your Google Sheet URL between /d/ and /edit. Sheet must be shared as <strong>Anyone with the link → Viewer</strong>.</div>
+      <div class="sid-current" id="sid-current"></div>
     </div>
     <div id="sheet-content">
       <div class="empty"><div style="font-size:2rem">📋</div><p>No data loaded yet.<br>Hit <strong>Sync from Sheet</strong> above to pull the latest from Google Sheets.</p></div>
@@ -437,6 +450,50 @@ function selDay(day, btn) {
   }
 }
 
+// ── SHEET ID MANAGEMENT ──────────────────────────────────────
+function saveSheetId() {
+  var input = document.getElementById('sid-input');
+  var val = input.value.trim();
+  // Accept full URL or just the ID
+  var match = val.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) val = match[1];
+  if (!val) { showToast('Please paste a Sheet ID or URL', 'err'); return; }
+  SID = val;
+  CSV_URLS = [
+    'https://docs.google.com/spreadsheets/d/'+SID+'/export?format=csv&gid=0',
+    'https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&sheet=2026',
+    'https://docs.google.com/spreadsheets/d/'+SID+'/pub?output=csv',
+  ];
+  try { localStorage.setItem('jt26_sid', SID); } catch(e) {}
+  updateSidDisplay();
+  input.value = '';
+  showToast('Sheet ID saved!', 'ok');
+  doSync();
+}
+
+function updateSidDisplay() {
+  var el = document.getElementById('sid-current');
+  if (el) el.textContent = 'Current ID: ' + SID;
+  // Also update timetable iframe if present
+  var iframe = document.getElementById('sheet-iframe');
+  if (iframe) iframe.src = 'https://docs.google.com/spreadsheets/d/'+SID+'/preview';
+}
+
+function loadSavedSheetId() {
+  try {
+    var saved = localStorage.getItem('jt26_sid');
+    if (saved) { SID = saved; CSV_URLS = [
+      'https://docs.google.com/spreadsheets/d/'+SID+'/export?format=csv&gid=0',
+      'https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&sheet=2026',
+      'https://docs.google.com/spreadsheets/d/'+SID+'/pub?output=csv',
+    ]; }
+  } catch(e) {}
+  updateSidDisplay();
+  // Refresh iframe with current SID
+  var iframe = document.getElementById('sheet-iframe');
+  if (iframe) iframe.src = 'https://docs.google.com/spreadsheets/d/'+SID+'/preview';
+}
+
 // ── UTILS ─────────────────────────────────────────────────────
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function showToast(msg, type) {
@@ -453,6 +510,7 @@ function showPanel(id, tab) {
 function tog(card) { card.classList.toggle('open'); }
 window.addEventListener('load', function() {
   document.querySelector('.dc').classList.add('open');
+  loadSavedSheetId();
   initMap();
 });
 </script>
@@ -461,7 +519,7 @@ window.addEventListener('load', function() {
 <div id="tp" class="panel">
   <iframe
     id="sheet-iframe"
-    src="https://docs.google.com/spreadsheets/d/1SAdQC3DB7z3wvIgURLaYArF3R9BdLY7C/pubhtml?gid=2006444208&single=true&widget=true&headers=false"
+    src="https://docs.google.com/spreadsheets/d/1SAdQC3DB7z3wvIgURLaYArF3R9BdLY7C/preview"
     style="flex:1;width:100%;border:none;display:block;"
     allowfullscreen>
   </iframe>
