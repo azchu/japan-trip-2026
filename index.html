@@ -107,6 +107,32 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
 .sid-btn:hover{opacity:0.85;}
 .sid-hint{font-size:0.72rem;color:var(--muted);line-height:1.5;}
 .sid-current{font-size:0.7rem;color:#7abf96;margin-top:0.35rem;}
+.bk-scroll{flex:1;overflow-y:auto;padding:1.1rem;}
+.bk-prog-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem;margin-bottom:1rem;}
+.bk-prog-label{display:flex;justify-content:space-between;font-size:0.75rem;font-weight:500;margin-bottom:0.5rem;}
+.bk-prog-bar{height:6px;background:#f0ebe3;border-radius:20px;overflow:hidden;}
+.bk-prog-fill{height:100%;background:#1a1a1a;border-radius:20px;transition:width 0.4s;}
+.bk-ph{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;margin:1.5rem 0 0.55rem;display:flex;align-items:center;gap:0.75rem;}
+.bk-ph::after{content:'';flex:1;height:1px;background:var(--border);}
+.bk-card{background:var(--card);border:1px solid var(--border);border-radius:11px;margin-bottom:0.5rem;overflow:hidden;}
+.bk-item{display:flex;align-items:flex-start;gap:0.85rem;padding:0.75rem 1rem;border-bottom:1px solid #f2ece5;cursor:pointer;transition:background 0.1s;user-select:none;}
+.bk-item:last-child{border-bottom:none;}
+.bk-item:hover{background:#faf7f2;}
+.bk-item.done{opacity:0.45;}
+.bk-item.done .bk-name{text-decoration:line-through;}
+.bk-cb{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.bk-item.done .bk-cb{background:#1a1a1a;border-color:#1a1a1a;}
+.bk-tick{color:#fff;font-size:11px;font-weight:700;display:none;}
+.bk-item.done .bk-tick{display:block;}
+.bk-info{flex:1;}
+.bk-name{font-weight:500;font-size:0.84rem;margin-bottom:0.15rem;}
+.bk-note{font-size:0.72rem;color:var(--muted);line-height:1.45;}
+.bk-link{font-size:0.7rem;color:#4a7fb5;text-decoration:none;display:inline-block;margin-top:0.2rem;}
+.bk-link:hover{text-decoration:underline;}
+.bk-badge{font-size:0.6rem;padding:2px 7px;border-radius:20px;font-weight:500;flex-shrink:0;margin-top:1px;}
+.bk-hard{background:#fdf0ec;color:#c84b31;border:1px solid #f5cdc4;}
+.bk-med{background:#fdf3e8;color:#d4821a;border:1px solid #f5d9aa;}
+.bk-easy{background:#edf4f0;color:#5a8a6e;border:1px solid #c4ddd2;}
 /* POPUP */
 .leaflet-popup-content-wrapper{border-radius:10px!important;font-family:'DM Sans',sans-serif!important;box-shadow:0 4px 20px rgba(0,0,0,0.15)!important;}
 .leaflet-popup-content{margin:10px 12px!important;font-size:13px!important;}
@@ -139,6 +165,7 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
   <div class="tab" onclick="showPanel('dp',this)">Day by Day</div>
   <div class="tab" onclick="showPanel('sp',this)">Sheet Data</div>
   <div class="tab" onclick="showPanel('tp',this)">Timetable</div>
+  <div class="tab" onclick="showPanel('bp',this)">Bookings</div>
 </div>
 
 <!-- MAP -->
@@ -506,6 +533,7 @@ function showPanel(id, tab) {
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   document.getElementById(id).classList.add('active'); tab.classList.add('active');
   if (id === 'mp') setTimeout(initMap, 50);
+  if (id === 'bp') bkLoad();
 }
 function tog(card) { card.classList.toggle('open'); }
 window.addEventListener('load', function() {
@@ -524,5 +552,81 @@ window.addEventListener('load', function() {
     allowfullscreen>
   </iframe>
 </div>
+
+<!-- BOOKINGS -->
+<div id="bp" class="panel">
+<div class="bk-scroll">
+  <div class="bk-prog-wrap">
+    <div class="bk-prog-label"><span>Booking progress</span><span id="bk-count">loading…</span></div>
+    <div class="bk-prog-bar"><div class="bk-prog-fill" id="bk-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="bk-ph" style="color:#c84b31">⏰ Set alarm — can't book yet</div>
+  <div class="bk-card">
+    <div class="bk-item" id="bki-ghibli" onclick="toggleBk('ghibli')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">🚨 Ghibli Museum <span class="bk-badge bk-hard">Very hard</span></div><div class="bk-note">Lawson lottery — alarm for <strong>10 April 12pm Sydney time</strong> · sells out in minutes · for 9 May</div><a class="bk-link" href="https://l-tike.com/ghibli-museum/" target="_blank">→ l-tike.com/ghibli-museum</a></div></div>
+  </div>
+
+  <div class="bk-ph" style="color:#c84b31">🔴 Book right now — open and selling</div>
+  <div class="bk-card">
+    <div class="bk-item" id="bki-kirby" onclick="toggleBk('kirby')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Kirby Café <span class="bk-badge bk-hard">Hard</span></div><div class="bk-note">Table reservation · Tokyo Skytree Town 4F · for 9 May</div><a class="bk-link" href="https://kirby-cafe.jp" target="_blank">→ kirby-cafe.jp</a></div></div>
+    <div class="bk-item" id="bki-teamlab" onclick="toggleBk('teamlab')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">TeamLab Borderless <span class="bk-badge bk-med">Medium</span></div><div class="bk-note">Timed entry · book ASAP for Sun 10 May · Azabudai Hills B2F</div><a class="bk-link" href="https://borderless.teamlab.art" target="_blank">→ borderless.teamlab.art</a></div></div>
+    <div class="bk-item" id="bki-usj" onclick="toggleBk('usj')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">USJ Express Pass <span class="bk-badge bk-med">Medium</span></div><div class="bk-note">Harry Potter + Nintendo World sell out weeks ahead · for 17 May</div><a class="bk-link" href="https://www.usj.co.jp/web/en/us/tickets/express" target="_blank">→ usj.co.jp</a></div></div>
+    <div class="bk-item" id="bki-hotels" onclick="toggleBk('hotels')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Hotels (all 3) <span class="bk-badge bk-med">Medium</span></div><div class="bk-note">Hotel Gracery Shinjuku · Cross Hotel Kyoto (arrange late check-in!) · Dormy Inn Namba Premium</div></div></div>
+  </div>
+
+  <div class="bk-ph" style="color:#d4821a">📅 Book in April — ~1 month before</div>
+  <div class="bk-card">
+    <div class="bk-item" id="bki-disneyland" onclick="toggleBk('disneyland')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Tokyo Disneyland Premier Access <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Set up account now · book Premier Access for Beauty &amp; the Beast on the day · 11 May</div><a class="bk-link" href="https://www.tokyodisneyresort.jp/en/" target="_blank">→ tokyodisneyresort.jp</a></div></div>
+    <div class="bk-item" id="bki-kimono" onclick="toggleBk('kimono')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Kimono Rental, Gion <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Wargo or Yumeyakata · hair set included · for 14 May</div><a class="bk-link" href="https://www.wargo.jp/en/" target="_blank">→ wargo.jp</a></div></div>
+    <div class="bk-item" id="bki-hozu" onclick="toggleBk('hozu')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Hozu River Boat Ride <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">¥4,100/person · 2-hour scenic gorge · for 15 May</div><a class="bk-link" href="https://www.hozugawakudari.co.jp/en" target="_blank">→ hozugawakudari.co.jp</a></div></div>
+    <div class="bk-item" id="bki-maid" onclick="toggleBk('maid')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Maid Café @Home <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Pre-book or walk-in · Akihabara · for 9 May</div><a class="bk-link" href="https://www.cafe-athome.com/en/" target="_blank">→ cafe-athome.com</a></div></div>
+  </div>
+
+  <div class="bk-ph" style="color:#5a8a6e">📅 Book 1–2 weeks before</div>
+  <div class="bk-card">
+    <div class="bk-item" id="bki-shibuyasky" onclick="toggleBk('shibuyasky')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Shibuya Sky <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Book sunset slot · Shibuya Scramble Square 46F · for 10 May</div><a class="bk-link" href="https://shibuya-scramble-square.com/sky/en/" target="_blank">→ shibuya-scramble-square.com/sky</a></div></div>
+    <div class="bk-item" id="bki-keioBus" onclick="toggleBk('keioBus')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Keio Bus (Shinjuku → Kawaguchiko) <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">¥2,000/person · Busta Shinjuku 4F · for 12 May</div><a class="bk-link" href="https://highway-buses.jp" target="_blank">→ highway-buses.jp</a></div></div>
+    <div class="bk-item" id="bki-solaniwa" onclick="toggleBk('solaniwa')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Solaniwa Onsen <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Check tattoo policy first! · for 18 May</div><a class="bk-link" href="https://solaniwa.com/en/" target="_blank">→ solaniwa.com</a></div></div>
+    <div class="bk-item" id="bki-limoBus" onclick="toggleBk('limoBus')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Airport Limousine Bus → KIX <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">¥1,600/person · Namba OCAT · for 20 May</div><a class="bk-link" href="https://www.kate.co.jp/en/" target="_blank">→ kate.co.jp</a></div></div>
+  </div>
+</div>
+</div>
+
+<script>
+var BK_BIN='69c66e8daa77b81da925f112',BK_KEY='$2a$10$McHoWT1mXbVKkbzaMbSNyOJ9rcCFyfJxH1m0pz1xgSwkVtdOQFhp.';
+var bkState={};
+var BK_KEYS=['ghibli','kirby','teamlab','usj','hotels','disneyland','kimono','hozu','maid','shibuyasky','keioBus','solaniwa','limoBus'];
+
+function bkLoad(){
+  fetch('https://api.jsonbin.io/v3/b/'+BK_BIN+'/latest',{headers:{'X-Master-Key':BK_KEY}})
+  .then(function(r){return r.json();})
+  .then(function(d){bkState=d.record;bkRender();})
+  .catch(function(){showToast('Could not load bookings','err');});
+}
+
+function bkRender(){
+  var done=0;
+  BK_KEYS.forEach(function(k){
+    var el=document.getElementById('bki-'+k);
+    if(!el)return;
+    if(bkState[k]){el.classList.add('done');done++;}
+    else{el.classList.remove('done');}
+  });
+  var pct=Math.round(done/BK_KEYS.length*100);
+  document.getElementById('bk-count').textContent=done+' / '+BK_KEYS.length+' booked';
+  document.getElementById('bk-fill').style.width=pct+'%';
+}
+
+function toggleBk(key){
+  bkState[key]=!bkState[key];
+  bkRender();
+  fetch('https://api.jsonbin.io/v3/b/'+BK_BIN,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key':BK_KEY},
+    body:JSON.stringify(bkState)
+  }).catch(function(){showToast('Could not save','err');});
+}
+</script>
+
 </body>
 </html>
