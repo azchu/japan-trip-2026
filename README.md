@@ -12,11 +12,11 @@ Live at: **https://azchu.github.io/japan-trip-2026/**
 
 | Segment | Dates | Accommodation |
 |---------|-------|---------------|
-| Tokyo | Days 1–6 (7–12 May) | Hotel Gracery Shinjuku |
+| Tokyo | Days 1–6 (7–12 May) | TBD |
 | Mt Fuji | Day 7 (13 May) | Ryokan, Lake Kawaguchiko |
-| Paragliding → Kyoto | Day 8 (14 May) | Cross Hotel Kyoto |
-| Kyoto | Days 9–10 (15–16 May) | Cross Hotel Kyoto |
-| Osaka | Days 11–13 (17–19 May) | Dormy Inn Namba Premium |
+| Paragliding → Kyoto | Day 8 (14 May) | TBD |
+| Kyoto | Days 9–10 (15–16 May) | TBD |
+| Osaka | Days 11–13 (17–19 May) | TBD |
 | Departure | Day 14 (20 May) | KIX 9:25pm ✈ |
 
 **Arriving:** NRT Terminal 3 · 10:10am · 7 May · Ref: SG9M3S  
@@ -106,17 +106,6 @@ Synced to the same JSONBin as Bookings. Four sections:
 3. Commit and push to `main` branch on `azchu/japan-trip-2026`
 4. GitHub Pages deploys automatically within ~60 seconds
 5. For timetable content changes — edit the Google Sheet directly, no code push needed
-
----
-
-## 🗓️ Key Dates & Alarms
-
-| Date | Action |
-|------|--------|
-| **10 April, 12pm Sydney** | 🚨 Ghibli Museum Lawson lottery opens |
-| **10 April, 8pm Sydney** | 🎮 Kirby Café reservations open (10th of each month, 6pm JST) |
-| **ASAP** | 🏔️ Ryokan Lake Kawaguchiko — Fuji-view rooms sell out months ahead |
-| **ASAP** | 🎨 TeamLab Borderless + Biovortex — timed entry sells out |
 
 ---
 
