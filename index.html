@@ -133,6 +133,44 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
 .bk-hard{background:#fdf0ec;color:#c84b31;border:1px solid #f5cdc4;}
 .bk-med{background:#fdf3e8;color:#d4821a;border:1px solid #f5d9aa;}
 .bk-easy{background:#edf4f0;color:#5a8a6e;border:1px solid #c4ddd2;}
+/* CHECKLIST TAB */
+.cl-scroll{flex:1;overflow-y:auto;}
+.cl-cont{max-width:680px;margin:0 auto;padding:1rem 1.1rem;}
+.cl-section{margin-bottom:1.5rem;}
+.cl-section-hdr{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;margin:1.5rem 0 0.55rem;display:flex;align-items:center;gap:0.75rem;color:var(--faint);}
+.cl-section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+.cl-card{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:0.5rem;}
+.cl-item{display:flex;align-items:flex-start;gap:0.85rem;padding:0.65rem 1rem;border-bottom:1px solid #f2ece5;cursor:pointer;transition:background 0.1s;user-select:none;}
+.cl-item:last-child{border-bottom:none;}
+.cl-item:hover{background:#faf7f2;}
+.cl-item.done .cl-name{text-decoration:line-through;opacity:0.5;}
+.cl-cb{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.cl-item.done .cl-cb{background:#1a1a1a;border-color:#1a1a1a;}
+.cl-tick{color:#fff;font-size:10px;font-weight:700;display:none;}
+.cl-item.done .cl-tick{display:block;}
+.cl-info{flex:1;}
+.cl-name{font-weight:500;font-size:0.84rem;}
+.cl-note{font-size:0.72rem;color:var(--muted);margin-top:0.1rem;line-height:1.4;}
+.cl-emoji{font-size:1rem;flex-shrink:0;margin-top:1px;}
+.cl-prog-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem;margin-bottom:1rem;}
+.cl-prog-label{display:flex;justify-content:space-between;font-size:0.75rem;font-weight:500;margin-bottom:0.5rem;}
+.cl-prog-bar{height:6px;background:#f0ebe3;border-radius:20px;overflow:hidden;}
+.cl-prog-fill{height:100%;border-radius:20px;transition:width 0.4s;}
+.stamp-log{display:flex;flex-direction:column;gap:0.4rem;padding:0.75rem 1rem;}
+.stamp-entry{display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0.75rem;background:var(--paper);border-radius:8px;border:1px solid var(--border);}
+.stamp-entry input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:0.82rem;color:var(--ink);outline:none;}
+.stamp-entry input::placeholder{color:var(--faint);}
+.stamp-add{display:flex;gap:0.4rem;padding:0.5rem 1rem 0.75rem;}
+.stamp-add input{flex:1;padding:0.4rem 0.7rem;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.8rem;background:var(--paper);color:var(--ink);outline:none;}
+.stamp-add input:focus{border-color:#888;}
+.stamp-add button{padding:0.4rem 0.8rem;background:var(--ink);color:#f7f4ef;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.8rem;cursor:pointer;}
+.stamp-del{color:var(--faint);font-size:0.8rem;cursor:pointer;padding:0 0.2rem;flex-shrink:0;}
+.stamp-del:hover{color:#c84b31;}
+.shop-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.6rem 1rem;border-bottom:1px solid #f2ece5;}
+.shop-item:last-child{border-bottom:none;}
+.shop-area{font-size:0.62rem;background:var(--paper);border:1px solid var(--border);border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.shop-name{font-weight:500;font-size:0.83rem;}
+.shop-desc{font-size:0.72rem;color:var(--muted);margin-top:0.05rem;}
 /* POPUP */
 .leaflet-popup-content-wrapper{border-radius:10px!important;font-family:'DM Sans',sans-serif!important;box-shadow:0 4px 20px rgba(0,0,0,0.15)!important;}
 .leaflet-popup-content{margin:10px 12px!important;font-size:13px!important;}
@@ -162,10 +200,10 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
 
 <div class="tabs">
   <div class="tab active" onclick="showPanel('mp',this)">Map</div>
-  <div class="tab" onclick="showPanel('dp',this)">Day by Day</div>
-  <div class="tab" onclick="showPanel('sp',this)">Sheet Data</div>
+  <div class="tab" onclick="showPanel('dp',this)">Days</div>
   <div class="tab" onclick="showPanel('tp',this)">Timetable</div>
   <div class="tab" onclick="showPanel('bp',this)">Bookings</div>
+  <div class="tab" onclick="showPanel('cl',this)">Checklist</div>
 </div>
 
 <!-- MAP -->
@@ -175,30 +213,6 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
   <div id="map"></div>
 </div>
 
-<!-- SHEET DATA -->
-<div id="sp" class="panel">
-  <div class="sheet-scroll">
-    <div class="sheet-hdr">
-      <h2>Sheet data</h2>
-      <button class="sync-btn" style="background:#1a1a1a;border-color:#1a1a1a;" onclick="doSync()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-        Sync now
-      </button>
-    </div>
-    <div class="sid-box">
-      <div class="sid-label">Google Sheet ID</div>
-      <div class="sid-row">
-        <input class="sid-input" id="sid-input" type="text" placeholder="Paste your Sheet ID here…" />
-        <button class="sid-btn" onclick="saveSheetId()">Save &amp; Sync</button>
-      </div>
-      <div class="sid-hint">The ID is the long string in your Google Sheet URL between /d/ and /edit. Sheet must be shared as <strong>Anyone with the link → Viewer</strong>.</div>
-      <div class="sid-current" id="sid-current"></div>
-    </div>
-    <div id="sheet-content">
-      <div class="empty"><div style="font-size:2rem">📋</div><p>No data loaded yet.<br>Hit <strong>Sync from Sheet</strong> above to pull the latest from Google Sheets.</p></div>
-    </div>
-  </div>
-</div>
 
 <!-- DAY BY DAY -->
 <div id="dp" class="panel">
@@ -565,11 +579,159 @@ window.addEventListener('load', function() {
   document.querySelector('.dc').classList.add('open');
   loadSavedSheetId();
   initMap();
+  clLoad();
 });
+
+// ── CHECKLIST ──────────────────────────────────────────────────
+var CL_KEY = 'jt26_checklist_v1';
+var clState = {food:{}, pack:{}, eki:[], goshuin:[]};
+var CL_FOOD_ITEMS = ['sushi','sashimi','ramen','udon','soba','tempura','tonkatsu','karaage','yakitori','yakiniku','curry','omurice','okonomiyaki','takoyaki','bento','shabushabu','sukiyaki','oden','mochi','dango','dorayaki','matcha','sake'];
+var CL_PACK_ITEMS = ['insurance','immigration','coinpouch','rubbishtag','towel','suica','esim','idp','cash','adaptor','taxfree','luggage'];
+
+function clLoad() {
+  // Load from JSONBin (same bin as bookings, stored under 'cl' key)
+  fetch('https://api.jsonbin.io/v3/b/'+BK_BIN+'/latest',{headers:{'X-Master-Key':BK_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var rec = d.record || {};
+      clState = rec.cl || {food:{},pack:{},eki:[],goshuin:[]};
+      // ensure all keys exist
+      if(!clState.eki) clState.eki=[];
+      if(!clState.goshuin) clState.goshuin=[];
+      if(!clState.food) clState.food={};
+      if(!clState.pack) clState.pack={};
+      clRender();
+    })
+    .catch(function(){
+      // fallback to localStorage if offline
+      try {
+        var saved = localStorage.getItem(CL_KEY);
+        if (saved) clState = JSON.parse(saved);
+        if(!clState.eki) clState.eki=[];
+        if(!clState.goshuin) clState.goshuin=[];
+        if(!clState.food) clState.food={};
+        if(!clState.pack) clState.pack={};
+      } catch(e) {}
+      clRender();
+    });
+}
+
+function clSave() {
+  // Save to localStorage immediately (fast, offline-safe)
+  try { localStorage.setItem(CL_KEY, JSON.stringify(clState)); } catch(e) {}
+  // Then sync to JSONBin — fetch current record first to merge, not overwrite bookings
+  fetch('https://api.jsonbin.io/v3/b/'+BK_BIN+'/latest',{headers:{'X-Master-Key':BK_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var rec = d.record || {};
+      rec.cl = clState; // merge checklist into record
+      return fetch('https://api.jsonbin.io/v3/b/'+BK_BIN,{
+        method:'PUT',
+        headers:{'Content-Type':'application/json','X-Master-Key':BK_KEY},
+        body:JSON.stringify(rec)
+      });
+    })
+    .catch(function(){ /* silent fail — localStorage has it */ });
+}
+
+function clToggle(type, key) {
+  if (!clState[type]) clState[type] = {};
+  clState[type][key] = !clState[type][key];
+  clSave();
+  clRender();
+}
+
+function clRender() {
+  // Food
+  var foodDone = 0;
+  CL_FOOD_ITEMS.forEach(function(k) {
+    var el = document.getElementById('clf-' + k);
+    if (!el) return;
+    if (clState.food[k]) { el.classList.add('done'); foodDone++; }
+    else el.classList.remove('done');
+  });
+  var fp = Math.round(foodDone / CL_FOOD_ITEMS.length * 100);
+  var fc = document.getElementById('cl-food-count');
+  var ff = document.getElementById('cl-food-fill');
+  if (fc) fc.textContent = foodDone + ' / ' + CL_FOOD_ITEMS.length;
+  if (ff) ff.style.width = fp + '%';
+
+  // Pack
+  CL_PACK_ITEMS.forEach(function(k) {
+    var el = document.getElementById('clp-' + k);
+    if (!el) return;
+    if (clState.pack[k]) el.classList.add('done');
+    else el.classList.remove('done');
+  });
+
+  // Stamps
+  renderStamps('eki');
+  renderStamps('goshuin');
+}
+
+function renderStamps(type) {
+  var log = document.getElementById(type + '-log');
+  if (!log) return;
+  var items = clState[type] || [];
+  if (items.length === 0) {
+    log.innerHTML = '<div style="padding:0.6rem 1rem;font-size:0.78rem;color:var(--faint);">None collected yet — add your first one below!</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var icon = type === 'eki' ? '🚉' : '⛩️';
+    html += '<div class="stamp-entry">'
+      + icon
+      + ' <input value="' + escHtml(items[i]) + '" data-type="' + type + '" data-idx="' + i + '" onchange="editStamp(this)" />'
+      + '<span class="stamp-del" data-type="' + type + '" data-idx="' + i + '" onclick="delStamp(this)">✕</span>'
+      + '</div>';
+  }
+  log.innerHTML = html;
+}
+function addStamp(type) {
+  var input = document.getElementById(type + '-input');
+  var val = input.value.trim();
+  if (!val) return;
+  if (!clState[type]) clState[type] = [];
+  clState[type].push(val);
+  input.value = '';
+  clSave();
+  renderStamps(type);
+}
+
+function editStamp(el) {
+  var type = el.getAttribute('data-type');
+  var idx = parseInt(el.getAttribute('data-idx'));
+  if (!clState[type]) return;
+  clState[type][idx] = el.value;
+  clSave();
+}
+
+function delStamp(el) {
+  var type = el.getAttribute('data-type');
+  var idx = parseInt(el.getAttribute('data-idx'));
+  if (!clState[type]) return;
+  clState[type].splice(idx, 1);
+  clSave();
+  renderStamps(type);
+}
 </script>
 
 <!-- TIMETABLE -->
 <div id="tp" class="panel">
+  <div style="background:var(--card);border-bottom:1px solid var(--border);padding:0.75rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;flex-shrink:0;">
+    <div class="sid-box" style="margin:0;flex:1;min-width:220px;border:none;padding:0;background:transparent;">
+      <div class="sid-row" style="margin:0;">
+        <input class="sid-input" id="sid-input" type="text" placeholder="Paste Google Sheet URL or ID…" />
+        <button class="sid-btn" onclick="saveSheetId()">Update</button>
+      </div>
+      <div class="sid-current" id="sid-current" style="margin-top:0.3rem;"></div>
+    </div>
+    <button class="sync-btn" style="background:#1a1a1a;border-color:#1a1a1a;flex-shrink:0;" onclick="doSync()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Sync CSV
+    </button>
+  </div>
   <iframe
     id="sheet-iframe"
     src="https://docs.google.com/spreadsheets/d/1SAdQC3DB7z3wvIgURLaYArF3R9BdLY7C/preview"
@@ -604,6 +766,7 @@ window.addEventListener('load', function() {
     <div class="bk-item" id="bki-kimono" onclick="toggleBk('kimono')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Kimono Rental, Gion <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Wargo or Yumeyakata · hair set included · for 15 May</div><a class="bk-link" href="https://www.wargo.jp/en/" target="_blank">→ wargo.jp</a></div></div>
     <div class="bk-item" id="bki-hozu" onclick="toggleBk('hozu')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Hozu River Boat Ride <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">¥4,100/person · 2-hour scenic gorge · for 16 May</div><a class="bk-link" href="https://www.hozugawakudari.co.jp/en" target="_blank">→ hozugawakudari.co.jp</a></div></div>
     <div class="bk-item" id="bki-maid" onclick="toggleBk('maid')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">Maid Café @Home <span class="bk-badge bk-easy">Easy</span></div><div class="bk-note">Pre-book or walk-in · Akihabara · for 9 May</div><a class="bk-link" href="https://www.cafe-athome.com/en/" target="_blank">→ cafe-athome.com</a></div></div>
+    <div class="bk-item" id="bki-ninja" onclick="toggleBk('ninja')"><div class="bk-cb"><span class="bk-tick">✓</span></div><div class="bk-info"><div class="bk-name">🥷 Ninja Tokyo — dinner <span class="bk-badge bk-med">Medium</span></div><div class="bk-note">Book 3+ days ahead online · strict cancellation policy · for 8 May (Fri) evening</div><a class="bk-link" href="https://ninja-tokyo.jp/en/" target="_blank">→ ninja-tokyo.jp</a></div></div>
   </div>
   <div class="bk-ph" style="color:#5a8a6e">📅 Book 1–2 weeks before</div>
   <div class="bk-card">
@@ -619,11 +782,143 @@ window.addEventListener('load', function() {
 <script>
 var BK_BIN='69c66e8daa77b81da925f112',BK_KEY='$2a$10$McHoWT1mXbVKkbzaMbSNyOJ9rcCFyfJxH1m0pz1xgSwkVtdOQFhp.';
 var bkState={};
-var BK_KEYS=['ghibli','ryokan','kirby','biovortex','teamlab','usj','hotels','disneyland','kimono','hozu','maid','shibuyasky','keioBus','solaniwa','limoBus','paragliding','idp'];
+var BK_KEYS=['ghibli','ryokan','kirby','biovortex','teamlab','usj','hotels','disneyland','kimono','hozu','maid','ninja','shibuyasky','keioBus','solaniwa','limoBus','paragliding','idp'];
 function bkLoad(){fetch('https://api.jsonbin.io/v3/b/'+BK_BIN+'/latest',{headers:{'X-Master-Key':BK_KEY}}).then(function(r){return r.json();}).then(function(d){bkState=d.record;bkRender();}).catch(function(){showToast('Could not load bookings','err');});}
 function bkRender(){var done=0;BK_KEYS.forEach(function(k){var el=document.getElementById('bki-'+k);if(!el)return;if(bkState[k]){el.classList.add('done');done++;}else{el.classList.remove('done');}}); var pct=Math.round(done/BK_KEYS.length*100);document.getElementById('bk-count').textContent=done+' / '+BK_KEYS.length+' booked';document.getElementById('bk-fill').style.width=pct+'%';}
 function toggleBk(key){bkState[key]=!bkState[key];bkRender();fetch('https://api.jsonbin.io/v3/b/'+BK_BIN,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':BK_KEY},body:JSON.stringify(bkState)}).catch(function(){showToast('Could not save','err');});}
 </script>
+
+
+<!-- CHECKLIST -->
+<div id="cl" class="panel">
+<div class="cl-scroll"><div class="cl-cont">
+
+  <!-- FOOD PROGRESS -->
+  <div class="cl-prog-wrap">
+    <div class="cl-prog-label"><span>🍜 Food tried</span><span id="cl-food-count">0 / 23</span></div>
+    <div class="cl-prog-bar"><div class="cl-prog-fill" id="cl-food-fill" style="width:0%;background:#c84b31;"></div></div>
+  </div>
+
+  <!-- FOOD CHECKLIST -->
+  <div class="cl-section-hdr" style="color:#c84b31">🍜 Food Bucket List</div>
+  <div class="cl-card" id="cl-food-card">
+    <div class="cl-item" id="clf-sushi" onclick="clToggle('food','sushi')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍣</div><div class="cl-info"><div class="cl-name">Sushi</div><div class="cl-note">Toyosu Fish Market (Day 4) or any sushiya</div></div></div>
+    <div class="cl-item" id="clf-sashimi" onclick="clToggle('food','sashimi')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🐟</div><div class="cl-info"><div class="cl-name">Sashimi</div><div class="cl-note">Fresh cuts of raw fish — Toyosu or Kuromon Market</div></div></div>
+    <div class="cl-item" id="clf-ramen" onclick="clToggle('food','ramen')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍜</div><div class="cl-info"><div class="cl-name">Ramen</div><div class="cl-note">Everywhere! Try tonkotsu in Osaka, shoyu in Tokyo</div></div></div>
+    <div class="cl-item" id="clf-udon" onclick="clToggle('food','udon')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍲</div><div class="cl-info"><div class="cl-name">Udon</div><div class="cl-note">Thick wheat noodles — great at Nishiki Market Kyoto</div></div></div>
+    <div class="cl-item" id="clf-soba" onclick="clToggle('food','soba')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍝</div><div class="cl-info"><div class="cl-name">Soba</div><div class="cl-note">Buckwheat noodles — try cold zarusoba in summer!</div></div></div>
+    <div class="cl-item" id="clf-tempura" onclick="clToggle('food','tempura')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍤</div><div class="cl-info"><div class="cl-name">Tempura</div><div class="cl-note">Lightly battered & fried — shrimp, veg, sweet potato</div></div></div>
+    <div class="cl-item" id="clf-tonkatsu" onclick="clToggle('food','tonkatsu')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🥩</div><div class="cl-info"><div class="cl-name">Tonkatsu</div><div class="cl-note">Breaded pork cutlet — best with karashi mustard & tonkatsu sauce</div></div></div>
+    <div class="cl-item" id="clf-karaage" onclick="clToggle('food','karaage')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍗</div><div class="cl-info"><div class="cl-name">Karaage</div><div class="cl-note">Japanese fried chicken — crispy, juicy, addictive</div></div></div>
+    <div class="cl-item" id="clf-yakitori" onclick="clToggle('food','yakitori')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍢</div><div class="cl-info"><div class="cl-name">Yakitori</div><div class="cl-note">Grilled chicken skewers — Omoide Yokocho (Day 1)!</div></div></div>
+    <div class="cl-item" id="clf-yakiniku" onclick="clToggle('food','yakiniku')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🥓</div><div class="cl-info"><div class="cl-name">Yakiniku</div><div class="cl-note">BBQ wagyu — farewell dinner Day 13! 🥩</div></div></div>
+    <div class="cl-item" id="clf-curry" onclick="clToggle('food','curry')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍛</div><div class="cl-info"><div class="cl-name">Japanese Curry</div><div class="cl-note">Thicker & sweeter than Indian curry — try CoCo Ichibanya!</div></div></div>
+    <div class="cl-item" id="clf-omurice" onclick="clToggle('food','omurice')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍳</div><div class="cl-info"><div class="cl-name">Omurice</div><div class="cl-note">Omelette over fried rice — comfort food classic</div></div></div>
+    <div class="cl-item" id="clf-okonomiyaki" onclick="clToggle('food','okonomiyaki')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🥞</div><div class="cl-info"><div class="cl-name">Okonomiyaki</div><div class="cl-note">Savoury pancake — Osaka style is the classic!</div></div></div>
+    <div class="cl-item" id="clf-takoyaki" onclick="clToggle('food','takoyaki')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🐙</div><div class="cl-info"><div class="cl-name">Takoyaki</div><div class="cl-note">Octopus balls — Dotonbori is the home of takoyaki (Day 11+)</div></div></div>
+    <div class="cl-item" id="clf-bento" onclick="clToggle('food','bento')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍱</div><div class="cl-info"><div class="cl-name">Bento</div><div class="cl-note">Try an ekiben (station bento) on the Shinkansen!</div></div></div>
+    <div class="cl-item" id="clf-shabushabu" onclick="clToggle('food','shabushabu')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🫕</div><div class="cl-info"><div class="cl-name">Shabu-shabu</div><div class="cl-note">Hot pot — swish thin meat slices in broth</div></div></div>
+    <div class="cl-item" id="clf-sukiyaki" onclick="clToggle('food','sukiyaki')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍲</div><div class="cl-info"><div class="cl-name">Sukiyaki</div><div class="cl-note">Sweet soy hot pot — dip in raw egg</div></div></div>
+    <div class="cl-item" id="clf-oden" onclick="clToggle('food','oden')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🥕</div><div class="cl-info"><div class="cl-name">Oden</div><div class="cl-note">Winter stew — grab from 7-Eleven convenience store!</div></div></div>
+    <div class="cl-item" id="clf-mochi" onclick="clToggle('food','mochi')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍡</div><div class="cl-info"><div class="cl-name">Mochi</div><div class="cl-note">Chewy rice cake — try fresh-pounded daifuku mochi</div></div></div>
+    <div class="cl-item" id="clf-dango" onclick="clToggle('food','dango')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍡</div><div class="cl-info"><div class="cl-name">Dango</div><div class="cl-note">Sweet rice dumplings on a stick — Nishiki Market Kyoto</div></div></div>
+    <div class="cl-item" id="clf-dorayaki" onclick="clToggle('food','dorayaki')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🥮</div><div class="cl-info"><div class="cl-name">Dorayaki</div><div class="cl-note">Doraemon's snack! Red bean pancake sandwich</div></div></div>
+    <div class="cl-item" id="clf-matcha" onclick="clToggle('food','matcha')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍵</div><div class="cl-info"><div class="cl-name">Matcha</div><div class="cl-note">Try matcha soft serve in Kyoto or Uji — life-changing</div></div></div>
+    <div class="cl-item" id="clf-sake" onclick="clToggle('food','sake')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🍶</div><div class="cl-info"><div class="cl-name">Sake (or non-alc amazake!)</div><div class="cl-note">Amazake is a sweet, non-alcoholic rice drink — try at shrines!</div></div></div>
+  </div>
+
+  <!-- TRAVEL CHECKLIST -->
+  <div class="cl-section-hdr" style="color:#4a7fb5">🎒 Before You Go — Packing Checklist</div>
+  <div class="cl-card" id="cl-travel-card">
+    <div class="cl-item" id="clp-insurance" onclick="clToggle('pack','insurance')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">📋</div><div class="cl-info"><div class="cl-name">Travel Insurance</div><div class="cl-note">Tick One-Trip Standard Asia — ✅ purchased!</div></div></div>
+    <div class="cl-item" id="clp-immigration" onclick="clToggle('pack','immigration')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">📝</div><div class="cl-info"><div class="cl-name">Immigration Form (Visit Japan Web)</div><div class="cl-note">Register at vjw-lp.digital.go.jp — fill in before boarding for fast-track arrival</div></div></div>
+    <div class="cl-item" id="clp-coinpouch" onclick="clToggle('pack','coinpouch')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">👛</div><div class="cl-info"><div class="cl-name">Coin Pouch</div><div class="cl-note">Japan uses a LOT of coins — ¥500, ¥100, ¥50, ¥10 all get used constantly</div></div></div>
+    <div class="cl-item" id="clp-rubbishtag" onclick="clToggle('pack','rubbishtag')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🗑️</div><div class="cl-info"><div class="cl-name">Rubbish Bag / Tag</div><div class="cl-note">Almost no public bins in Japan — carry a small bag for your rubbish while out!</div></div></div>
+    <div class="cl-item" id="clp-towel" onclick="clToggle('pack','towel')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🏊</div><div class="cl-info"><div class="cl-name">Towel</div><div class="cl-note">Some onsens don't include towels — pack a small one or buy a tenugui in Japan</div></div></div>
+    <div class="cl-item" id="clp-suica" onclick="clToggle('pack','suica')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🚇</div><div class="cl-info"><div class="cl-name">Suica IC Card</div><div class="cl-note">Get at Narita Airport on arrival — tap in/out on all trains and convenience stores</div></div></div>
+    <div class="cl-item" id="clp-esim" onclick="clToggle('pack','esim')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">📱</div><div class="cl-info"><div class="cl-name">eSIM / Data SIM</div><div class="cl-note">Set up before departure — Ubigi, Airalo or IIJmio are popular for Japan</div></div></div>
+    <div class="cl-item" id="clp-idp" onclick="clToggle('pack','idp')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🪪</div><div class="cl-info"><div class="cl-name">International Driving Permit (IDP)</div><div class="cl-note">$53 · Service NSW in-person · needed for paragliding rental car on Day 8</div></div></div>
+    <div class="cl-item" id="clp-cash" onclick="clToggle('pack','cash')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">💴</div><div class="cl-info"><div class="cl-name">Japanese Yen (cash)</div><div class="cl-note">Japan is still cash-heavy — withdraw from 7-Eleven or Japan Post ATMs</div></div></div>
+    <div class="cl-item" id="clp-adaptor" onclick="clToggle('pack','adaptor')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🔌</div><div class="cl-info"><div class="cl-name">Power Adaptor</div><div class="cl-note">Japan uses Type A (flat 2-pin) — same as Australia, no adaptor needed!</div></div></div>
+    <div class="cl-item" id="clp-taxfree" onclick="clToggle('pack','taxfree')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🏷️</div><div class="cl-info"><div class="cl-name">Tax-Free Shopping (Consumption Tax Refund)</div><div class="cl-note">Show passport at checkout in department stores &amp; electronics shops — 10% back on purchases over ¥5,500! Look for the tax-free logo. It&#39;s a refund at the register, not a separate counter now.</div></div></div>
+    <div class="cl-item" id="clp-luggage" onclick="clToggle('pack','luggage')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🧳</div><div class="cl-info"><div class="cl-name">Luggage Transport (Takuhaibin)</div><div class="cl-note">Ask your hotel to forward luggage to your next hotel via Yamato (Kuroneko) or Sagawa — ¥1,500–2,500/bag · arrives next day · game-changer for Shinkansen travel!</div></div></div>
+  </div>
+
+  <!-- EKI STAMPS -->
+  <div class="cl-section-hdr" style="color:#5a8a6e">🚉 Eki-Stamps Collected</div>
+  <div class="cl-card">
+    <div class="stamp-log" id="eki-log"></div>
+    <div class="stamp-add">
+      <input id="eki-input" type="text" placeholder="Station name e.g. Shinjuku, Kyoto…" />
+      <button onclick="addStamp('eki')">+ Add</button>
+    </div>
+  </div>
+
+  <!-- GOSHUIN STAMPS -->
+  <div class="cl-section-hdr" style="color:#7c5cbf">⛩️ Goshuin Collected</div>
+  <div class="cl-card">
+    <div class="stamp-log" id="goshuin-log"></div>
+    <div class="stamp-add">
+      <input id="goshuin-input" type="text" placeholder="Shrine or temple e.g. Fushimi Inari…" />
+      <button onclick="addStamp('goshuin')">+ Add</button>
+    </div>
+  </div>
+
+  <!-- SHOPS -->
+  <!-- RELIABLE GO-TOS -->
+  <div class="cl-section-hdr" style="color:#4a7fb5">🏪 Reliable Go-Tos — You'll Use These A Lot</div>
+  <div class="cl-card">
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">7-Eleven</div><div class="shop-desc">Convenience store — onigiri, hot food, ATM, printing, everything</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">FamilyMart</div><div class="shop-desc">Convenience store — great sandwiches, soft serve, and seasonal specials</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Lawson</div><div class="shop-desc">Convenience store — best sweets and Karaage-kun fried chicken</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Sukiya</div><div class="shop-desc">Gyudon (beef rice bowl) chain — open 24hrs, fast, cheap, delicious</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Matsuya</div><div class="shop-desc">Gyudon and teishoku sets — order at the ticket machine</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Yoshinoya</div><div class="shop-desc">The original gyudon chain since 1899 — classic and reliable</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">CoCo Ichibanya</div><div class="shop-desc">Japanese curry chain — choose your spice level (0–10) and toppings</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Ichiran</div><div class="shop-desc">Solo-booth ramen — customise your bowl, no talking required, incredible tonkotsu</div></div></div>
+  </div>
+
+  <!-- KYOTO -->
+  <div class="cl-section-hdr" style="color:#7c5cbf">⛩️ Kyoto — Artisan &amp; Traditional</div>
+  <div class="cl-card">
+    <div class="shop-item"><span class="shop-area">Kyoto</span><div><div class="shop-name">Ippodo Tea</div><div class="shop-desc">Founded 1717 — finest matcha, gyokuro and sencha teas · Teramachi, central Kyoto</div></div></div>
+    <div class="shop-item"><span class="shop-area">Kyoto</span><div><div class="shop-name">Honke Owariya</div><div class="shop-desc">Soba restaurant since 1465 — one of Japan's oldest restaurants · order the hōrai soba</div></div></div>
+    <div class="shop-item"><span class="shop-area">Kyoto</span><div><div class="shop-name">Aritsugu (Nishiki)</div><div class="shop-desc">Founded 1560 — handcrafted Japanese knives, can be engraved in-store while you wait</div></div></div>
+    <div class="shop-item"><span class="shop-area">Kyoto</span><div><div class="shop-name">Shoyeido</div><div class="shop-desc">Traditional incense house — centuries of craftsmanship · beautiful packaging for gifts</div></div></div>
+    <div class="shop-item"><span class="shop-area">Kyoto</span><div><div class="shop-name">Nishikawa Kyoto</div><div class="shop-desc">Traditional fabrics and home goods — Kyoto textiles done right</div></div></div>
+  </div>
+
+  <!-- OSAKA -->
+  <div class="cl-section-hdr" style="color:#d4821a">🏙️ Osaka — Food-Focused</div>
+  <div class="cl-card">
+    <div class="shop-item"><span class="shop-area">Osaka</span><div><div class="shop-name">Ajinoya</div><div class="shop-desc">Famous okonomiyaki restaurant — Osaka-style, hearty and comforting</div></div></div>
+    <div class="shop-item"><span class="shop-area">Osaka</span><div><div class="shop-name">Jiyuken</div><div class="shop-desc">Osaka's oldest Western-style restaurant (1890) — try the hayashi rice</div></div></div>
+  </div>
+
+  <!-- TOKYO -->
+  <div class="cl-section-hdr" style="color:#c84b31">🗼 Tokyo — Balanced &amp; Variety</div>
+  <div class="cl-card">
+    <div class="shop-item"><span class="shop-area">Tokyo</span><div><div class="shop-name">Uogashi Nihon-Ichi</div><div class="shop-desc">Standing sushi bar — fast, fresh, cheap · Tsukiji area · perfect for a quick high-quality meal</div></div></div>
+    <div class="shop-item"><span class="shop-area">Tokyo</span><div><div class="shop-name">Maisen</div><div class="shop-desc">Legendary tonkatsu restaurant in Omotesando — try the wagyu katsu sando</div></div></div>
+    <div class="shop-item"><span class="shop-area">Tokyo</span><div><div class="shop-name">Tsukiji Outer Market</div><div class="shop-desc">Fresh seafood and artisan food stalls — walk and browse · best in the morning</div></div></div>
+    <div class="shop-item"><span class="shop-area">Tokyo</span><div><div class="shop-name">Kamawanu</div><div class="shop-desc">Hand-dyed tenugui (Japanese cloths/towels) — beautiful, lightweight souvenirs</div></div></div>
+    <div class="shop-item"><span class="shop-area">Tokyo</span><div><div class="shop-name">Tansuya (Shinjuku)</div><div class="shop-desc">Vintage Japanese furniture and antiques — great for browsing even if not buying</div></div></div>
+  </div>
+
+  <!-- SHOPPING -->
+  <div class="cl-section-hdr" style="color:#5a8a6e">🛍️ Shopping — Actually Useful Ones</div>
+  <div class="cl-card">
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Don Quijote (Donki)</div><div class="shop-desc">Open late — souvenirs, snacks, cosmetics, random useful stuff, tax-free shopping</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Muji</div><div class="shop-desc">Minimalist home goods, stationery, and basics — great quality everyday items</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Uniqlo</div><div class="shop-desc">Japanese fashion basics — Heattech, AIRism, and UT graphic tees are iconic picks</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Loft</div><div class="shop-desc">Stationery, gifts, gadgets and lifestyle goods — dangerously fun to browse</div></div></div>
+    <div class="shop-item"><span class="shop-area">Everywhere</span><div><div class="shop-name">Tokyu Hands</div><div class="shop-desc">Creative tools, gifts, quirky items — the kind of store you lose an hour in</div></div></div>
+    <div class="shop-item"><span class="shop-area">Anime / Manga</span><div><div class="shop-name">Animate</div><div class="shop-desc">Japan's biggest anime merchandise chain — figures, manga, merch, CDs</div></div></div>
+    <div class="shop-item"><span class="shop-area">Anime / Manga</span><div><div class="shop-name">Mandarake</div><div class="shop-desc">Rare anime and manga collectibles — vintage figures, doujinshi, out-of-print items</div></div></div>
+    <div class="shop-item"><span class="shop-area">Anime / Manga</span><div><div class="shop-name">Book Off</div><div class="shop-desc">Cheap second-hand books, games, manga, CDs and gear — great for bargain hunting</div></div></div>
+  </div>
+</div></div>
+</div>
 
 </body>
 </html>
