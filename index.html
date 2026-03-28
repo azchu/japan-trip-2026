@@ -171,6 +171,45 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
 .shop-area{font-size:0.62rem;background:var(--paper);border:1px solid var(--border);border-radius:20px;padding:1px 7px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
 .shop-name{font-weight:500;font-size:0.83rem;}
 .shop-desc{font-size:0.72rem;color:var(--muted);margin-top:0.05rem;}
+/* BOOKED TAB */
+.bkd-scroll{flex:1;overflow-y:auto;}
+.bkd-cont{max-width:680px;margin:0 auto;padding:1rem 1.1rem;}
+.bkd-section-hdr{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;margin:1.5rem 0 0.6rem;display:flex;align-items:center;gap:0.75rem;}
+.bkd-section-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
+.flight-card{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:0.75rem;}
+.flight-header{background:var(--ink);color:#f7f4ef;padding:0.65rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+.flight-header-title{font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+.flight-ref{font-size:0.7rem;color:#a09484;font-family:monospace;letter-spacing:0.1em;}
+.flight-body{padding:1rem;}
+.flight-row{display:flex;align-items:flex-start;gap:1rem;margin-bottom:0.6rem;}
+.flight-row:last-child{margin-bottom:0;}
+.flight-time{font-family:'Playfair Display',serif;font-size:2rem;font-weight:400;line-height:1;color:var(--ink);min-width:5rem;}
+.flight-details{flex:1;}
+.flight-airport{font-weight:600;font-size:0.9rem;margin-bottom:0.15rem;}
+.flight-airport-full{font-size:0.73rem;color:var(--muted);}
+.flight-terminal{font-size:0.7rem;color:var(--faint);margin-top:0.1rem;}
+.flight-tz{font-size:0.68rem;background:var(--paper);border:1px solid var(--border);border-radius:4px;padding:2px 6px;color:var(--muted);display:inline-block;margin-top:0.3rem;}
+.flight-tbd{background:var(--paper);border:1px dashed var(--border);border-radius:11px;padding:1.25rem 1rem;text-align:center;margin-bottom:0.75rem;}
+.flight-tbd-lbl{font-size:0.8rem;color:var(--faint);margin-top:0.3rem;}
+.hotel-card{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:0.5rem;}
+.hotel-item{display:flex;align-items:flex-start;gap:0.85rem;padding:0.75rem 1rem;border-bottom:1px solid #f2ece5;}
+.hotel-item:last-child{border-bottom:none;}
+.hotel-color{width:5px;border-radius:4px;flex-shrink:0;align-self:stretch;min-height:20px;}
+.hotel-info{flex:1;}
+.hotel-name{font-weight:600;font-size:0.87rem;margin-bottom:0.1rem;}
+.hotel-dates{font-size:0.7rem;color:var(--faint);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:0.15rem;}
+.hotel-detail{font-size:0.73rem;color:var(--muted);line-height:1.5;}
+.hotel-status{font-size:0.62rem;padding:2px 8px;border-radius:20px;font-weight:500;flex-shrink:0;margin-top:2px;}
+.hotel-booked{background:#edf4f0;color:#5a8a6e;border:1px solid #c4ddd2;}
+.hotel-pending{background:#fdf3e8;color:#d4821a;border:1px solid #f5d9aa;}
+.emerg-card{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:0.5rem;}
+.emerg-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.65rem 1rem;border-bottom:1px solid #f2ece5;}
+.emerg-item:last-child{border-bottom:none;}
+.emerg-emoji{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.emerg-label{font-size:0.7rem;color:var(--faint);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.05rem;}
+.emerg-val{font-weight:600;font-size:0.88rem;font-family:monospace;letter-spacing:0.05em;}
+.emerg-note{font-size:0.71rem;color:var(--muted);margin-top:0.1rem;line-height:1.4;}
+.addr-ja{font-size:0.8rem;line-height:1.6;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.85rem;margin-top:0.35rem;}
 /* POPUP */
 .leaflet-popup-content-wrapper{border-radius:10px!important;font-family:'DM Sans',sans-serif!important;box-shadow:0 4px 20px rgba(0,0,0,0.15)!important;}
 .leaflet-popup-content{margin:10px 12px!important;font-size:13px!important;}
@@ -203,6 +242,7 @@ footer{text-align:center;padding:1rem;color:var(--faint);font-size:0.7rem;border
   <div class="tab" onclick="showPanel('dp',this)">Days</div>
   <div class="tab" onclick="showPanel('tp',this)">Timetable</div>
   <div class="tab" onclick="showPanel('bp',this)">Bookings</div>
+  <div class="tab" onclick="showPanel('bkd',this)">Booked</div>
   <div class="tab" onclick="showPanel('cl',this)">Checklist</div>
 </div>
 
@@ -398,7 +438,7 @@ function onFail(msg) {
   var st  = document.getElementById('sst');
   btn.disabled = false; btn.classList.remove('spin');
   st.textContent = msg || 'Sync failed'; st.className = 'sync-st err';
-  showToast('Sync failed — check the Sheet Data tab for help', 'err');
+  showToast('Sync failed — paste your Sheet URL in the Timetable tab', 'err');
 }
 
 // ── SHEET PANEL ───────────────────────────────────────────────
@@ -586,7 +626,7 @@ window.addEventListener('load', function() {
 var CL_KEY = 'jt26_checklist_v1';
 var clState = {food:{}, pack:{}, eki:[], goshuin:[]};
 var CL_FOOD_ITEMS = ['sushi','sashimi','ramen','udon','soba','tempura','tonkatsu','karaage','yakitori','yakiniku','curry','omurice','okonomiyaki','takoyaki','bento','shabushabu','sukiyaki','oden','mochi','dango','dorayaki','matcha','sake'];
-var CL_PACK_ITEMS = ['insurance','immigration','coinpouch','rubbishtag','towel','suica','esim','idp','cash','adaptor','taxfree','luggage'];
+var CL_PACK_ITEMS = ['coinpouch','rubbishtag','towel','suica','esim','idp','cash','adaptor','taxfree','luggage'];
 
 function clLoad() {
   // Load from JSONBin (same bin as bookings, stored under 'cl' key)
@@ -789,6 +829,116 @@ function toggleBk(key){bkState[key]=!bkState[key];bkRender();fetch('https://api.
 </script>
 
 
+<!-- BOOKED -->
+<div id="bkd" class="panel">
+<div class="bkd-scroll"><div class="bkd-cont">
+
+  <!-- FLIGHTS -->
+  <div class="bkd-section-hdr" style="color:#4a7fb5">✈️ Flights</div>
+
+  <!-- ARRIVAL -->
+  <div class="flight-card">
+    <div class="flight-header">
+      <span class="flight-header-title">✈ Arriving — Tokyo Narita</span>
+      <span class="flight-ref">REF: SG9M3S</span>
+    </div>
+    <div class="flight-body">
+      <div class="flight-row">
+        <div class="flight-time">10:10</div>
+        <div class="flight-details">
+          <div class="flight-airport">NRT — Narita International Airport</div>
+          <div class="flight-airport-full">Terminal 3</div>
+          <div class="flight-terminal">Thu 7 May 2026</div>
+          <span class="flight-tz">GMT+09 · Japan Standard Time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPARTURE TBD -->
+  <div class="flight-tbd">
+    <div style="font-size:1.5rem">🛫</div>
+    <div class="flight-tbd-lbl">Departure flight details to be added</div>
+  </div>
+
+  <!-- HOTELS -->
+  <div class="bkd-section-hdr" style="color:#c84b31">🏨 Hotels</div>
+  <div class="flight-tbd">
+    <div style="font-size:1.5rem">🏨</div>
+    <div class="flight-tbd-lbl">No hotels booked yet — add details here once confirmed</div>
+  </div>
+
+  <!-- EMERGENCY INFO -->
+  <div class="bkd-section-hdr" style="color:#b03030">🆘 Emergency Info</div>
+  <div class="emerg-card">
+    <div class="emerg-item">
+      <div class="emerg-emoji">🚨</div>
+      <div>
+        <div class="emerg-label">Japan Emergency (Police / Fire / Ambulance)</div>
+        <div class="emerg-val">110 &nbsp;/&nbsp; 119</div>
+        <div class="emerg-note">110 = Police &nbsp;·&nbsp; 119 = Fire &amp; Ambulance &nbsp;·&nbsp; Operators speak some English</div>
+      </div>
+    </div>
+    <div class="emerg-item">
+      <div class="emerg-emoji">🇦🇺</div>
+      <div>
+        <div class="emerg-label">Australian Embassy — Tokyo</div>
+        <div class="emerg-val">+81 3-5232-4111</div>
+        <div class="emerg-note">2-1-14 Mita, Minato-ku, Tokyo &nbsp;·&nbsp; 24hr consular emergency line</div>
+      </div>
+    </div>
+    <div class="emerg-item">
+      <div class="emerg-emoji">🇦🇺</div>
+      <div>
+        <div class="emerg-label">Australian Consulate — Osaka</div>
+        <div class="emerg-val">+81 6-6941-9271</div>
+        <div class="emerg-note">Twin 21 MID Tower, 2-1-61 Shiromi, Chuo-ku, Osaka</div>
+      </div>
+    </div>
+    <div class="emerg-item">
+      <div class="emerg-emoji">🏥</div>
+      <div>
+        <div class="emerg-label">Tourist Medical Help (English-speaking)</div>
+        <div class="emerg-val">Japan Visitor Hotline: 050-3816-2787</div>
+        <div class="emerg-note">24hrs · English · helps find hospitals, file police reports, translation</div>
+      </div>
+    </div>
+    <div class="emerg-item">
+      <div class="emerg-emoji">📋</div>
+      <div>
+        <div class="emerg-label">Travel Insurance — Tick One-Trip Standard Asia</div>
+        <div class="emerg-val">✅ Purchased</div>
+        <div class="emerg-note">Save your policy number and 24hr claims number in your phone before departure</div>
+      </div>
+    </div>
+    <div class="emerg-item">
+      <div class="emerg-emoji">🏨</div>
+      <div>
+        <div class="emerg-label">Hotel addresses in Japanese (for taxis)</div>
+        <div class="emerg-note">Show to taxi driver — they may not read English addresses</div>
+        <div class="addr-ja">
+          <strong>Hotel Gracery Shinjuku (Tokyo)</strong><br>
+          東京都新宿区歌舞伎町１丁目19−1<br><br>
+          <strong>Cross Hotel Kyoto</strong><br>
+          京都府京都市中京区蛸薬師通河原町東入備前島町310-1<br><br>
+          <strong>Dormy Inn Namba Premium (Osaka)</strong><br>
+          大阪府大阪市中央区千日前2-4-10
+        </div>
+      </div>
+    </div>
+    <div class="emerg-item">
+      <div class="emerg-emoji">🛂</div>
+      <div>
+        <div class="emerg-label">Visit Japan Web (Arrival Registration)</div>
+        <div class="emerg-val">vjw-lp.digital.go.jp</div>
+        <div class="emerg-note">Register before boarding for fast-track customs &amp; quarantine — saves 30+ min at Narita</div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+</div>
+
 <!-- CHECKLIST -->
 <div id="cl" class="panel">
 <div class="cl-scroll"><div class="cl-cont">
@@ -830,8 +980,6 @@ function toggleBk(key){bkState[key]=!bkState[key];bkRender();fetch('https://api.
   <!-- TRAVEL CHECKLIST -->
   <div class="cl-section-hdr" style="color:#4a7fb5">🎒 Before You Go — Packing Checklist</div>
   <div class="cl-card" id="cl-travel-card">
-    <div class="cl-item" id="clp-insurance" onclick="clToggle('pack','insurance')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">📋</div><div class="cl-info"><div class="cl-name">Travel Insurance</div><div class="cl-note">Tick One-Trip Standard Asia — ✅ purchased!</div></div></div>
-    <div class="cl-item" id="clp-immigration" onclick="clToggle('pack','immigration')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">📝</div><div class="cl-info"><div class="cl-name">Immigration Form (Visit Japan Web)</div><div class="cl-note">Register at vjw-lp.digital.go.jp — fill in before boarding for fast-track arrival</div></div></div>
     <div class="cl-item" id="clp-coinpouch" onclick="clToggle('pack','coinpouch')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">👛</div><div class="cl-info"><div class="cl-name">Coin Pouch</div><div class="cl-note">Japan uses a LOT of coins — ¥500, ¥100, ¥50, ¥10 all get used constantly</div></div></div>
     <div class="cl-item" id="clp-rubbishtag" onclick="clToggle('pack','rubbishtag')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🗑️</div><div class="cl-info"><div class="cl-name">Rubbish Bag / Tag</div><div class="cl-note">Almost no public bins in Japan — carry a small bag for your rubbish while out!</div></div></div>
     <div class="cl-item" id="clp-towel" onclick="clToggle('pack','towel')"><div class="cl-cb"><span class="cl-tick">✓</span></div><div class="cl-emoji">🏊</div><div class="cl-info"><div class="cl-name">Towel</div><div class="cl-note">Some onsens don't include towels — pack a small one or buy a tenugui in Japan</div></div></div>
